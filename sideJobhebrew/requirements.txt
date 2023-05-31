@@ -1,7 +1,0 @@
-Flask==2.3.2
-Flask-SQLAlchemy==3.0.3
-SQLAlchemy==2.0.12
-Flask-SocketIO==5.3.4
-Werkzeug==2.3.4
-simple-websocket==0.10.0
-flask_talisman==1.0.0
