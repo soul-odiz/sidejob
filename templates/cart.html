@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  h1 {
+    padding: 10px 25px;
+    margin-top: 50px;
+    background: #87779F;
+    color: #fff;
+    border-radius: 12px 12px 0 0;
+    text-align: center;
+  }
+
+  .table {
+    width: 100%;
+    margin-top: 30px;
+    border-collapse: collapse;
+  }
+
+  .table th, .table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color: #87779F;
+    color: white;
+  }
+
+  .table .btn-danger {
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+
+  h3 {
+    color: #333;
+    font-size: 2em;
+    text-align: right;
+    margin-top: 30px;
+  }
+</style>
+  <h1>עגלה</h1>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">מחק</th>
+        <th scope="col">סה''כ</th>
+        <th scope="col">כמות</th>
+        <th scope="col">שכר שעתי</th>
+        <th scope="col">חבר צוות</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cart_crew_member in cart_crew_members %}
+        <tr>
+          <td><a href="{{ url_for('unhire_crew_member', crew_member_id=cart_crew_member.crew_member.id) }}" class="btn btn-danger">הסר</a></td>
+          <td>{{ cart_crew_member.crew_member.hourly_fee * cart_crew_member.quantity }}₪</td>
+          <td>{{ cart_crew_member.quantity }}</td>
+          <td>{{ cart_crew_member.crew_member.hourly_fee }}₪</td>
+          <td>{{ cart_crew_member.crew_member.name }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <h3>סך הכל ₪{{ total }}</h3>
+{% endblock %}

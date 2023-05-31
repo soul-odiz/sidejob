@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    header {
+        background-color: #f8f9fa;
+        padding: 20px;
+        text-align: center;
+    }
+    nav {
+        margin-left: -22px;
+    }
+    nav ul {
+        list-style-type: none;
+        padding: 0;
+        overflow: hidden;
+        background-color: #333;
+    }
+    nav li {
+        float: right;
+    }
+    nav li a {
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+    nav li a:hover {
+        background-color: #111;
+    }
+    footer {
+        background-color: #f8f9fa;
+        text-align: center;
+        padding: 10px;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+    }
+    .text-dec {
+        text-align: right;
+        padding-bottom: 110px;
+    }
+    .slogan {
+        position: absolute;
+        top: -11px;
+        right: -98px;
+        transform: translateX(-50%);
+        font-size: 0.8em;
+        font-weight: bold;
+        text-align: center;
+        color: white;
+        max-width: 300px;
+        word-wrap: break-word;
+        border: 1px solid #333;
+        padding: 10px;
+        border-radius: 12px;
+        background-color: black;
+        backdrop-filter: blur(5px);
+    }
+</style>
+<header>
+    <h6 class="slogan">למה להיות שכיר כשאתה יכול להיות עצמאי</h6>
+    <h1>"אודות "סייד ג'וב</h1>
+</header>
+<nav>
+    <ul>
+        <li><a href="/">דף הבית</a></li>
+        <li><a href="/cart">עגלה</a></li>
+        <li><a href="/login">התחבר</a></li>
+        <li><a href="/signup">צור חשבון</a></li>
+        <li><a href="/about">אודות</a></li>
+        <li><a href="/logout">התנתק</a></li>
+    </ul>
+</nav>
+<div class="text-dec">
+    <h2>...איך הכל התחיל</h2>
+    <p>..קודם הגיע הרעיון</p>
+    <p>אחריו הגיע הסקרנות</p>
+    <p>הסקרנות הפכה למוטיבציה</p>
+    <p>והמוטיבציה הפכה לרעב</p>
+    <p>"תהיה השינוי שאתה רוצה לראות בעולם"</p>
+    <p>משפט שדחף ודוחף אותי כל יום מחדש</p>
+    <p>הרצון לתת לאנשים יותר כוח</p>
+    <p>הרצון לתת להם חיים יותר נוחים</p>
+    <p>הרצון לשפר ולהשתפר</p>
+    <p>!בשבילכם זה אולי אתר, בשבילי זה העתיד</p>
+    <p>עכשיו מה שנשאר זה לגלות.. מהי "המתנה" שלכם</p>
+</div>
+<footer>
+    <p>&copy; 2023 sideJob. All rights reserved.</p>
+</footer>
+
+{% endblock %}
