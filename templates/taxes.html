@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Taxes Calculator</h1>
+    <form action="{{ url_for('calculate_taxes') }}" method="POST">
+        <label for="hourly_fee">Hourly Fee:</label>
+        <input type="number" id="hourly_fee" name="hourly_fee" required>
+        <br><br>
+        <label for="hours_worked">Hours Worked:</label>
+        <input type="number" id="hours_worked" name="hours_worked" required>
+        <br><br>
+        <input type="submit" value="Calculate Taxes">
+    </form>
+
+    {% if taxes %}
+        <h2>Taxes Calculation Result:</h2>
+        <p>Total Taxes: {{ taxes }}</p>
+    {% endif %}
+{% endblock %}

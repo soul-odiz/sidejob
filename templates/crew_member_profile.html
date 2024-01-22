@@ -1,0 +1,622 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+        form {
+            display: flex;
+            direction: rtl;
+            padding: 10px;
+        }
+        form textarea {
+            flex-grow: 1;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: Arial;
+            font-size: 14px;
+            padding: 10px;
+            height: 50px;
+        }
+        form button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            margin-left: 900px;
+            color: white;
+            cursor: pointer;
+            background-color: #333;
+            color: #fff;
+            margin-left: 0;
+        }
+        form button:hover {
+            background-color: #0056b3;
+        }
+        h1 {
+            direction: rtl;
+            text-align: right;
+        }
+        .pic-box {
+            border: none;
+            border-radius: 30px;
+            padding: 0px;
+            width: 320px;
+            height: 400px;
+            overflow: hidden;
+            position: relative;
+            direction: rtl;
+            right: -310px;
+            top: -19px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4);
+        }
+        .pic-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .text-box {
+            position: relative;
+            right: -305px;
+            top: -9px;
+            text-align: right;
+        }
+        .row {
+            margin-top: 80px;
+        }
+        .button-container {
+            position: absolute;
+            bottom: 0px;
+            width: 100%;
+            text-align: center;
+        }
+        .reviews-container {
+            overflow-y: hidden;
+            overflow-x: scroll;
+            white-space: nowrap;
+            position: absolute;
+            direction: rtl;
+            border: none;
+            bottom: -185px;
+            right: 0;
+            width: 970px;
+        }
+        .reviews-container::-webkit-scrollbar {
+            display: none; /* Hide the scrollbar for WebKit browsers */
+        }
+        .review {
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f5f5f5;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            width: 40%;
+            height: 135px;
+            direction: rtl;
+        }
+        .review-form h2 {
+            padding: 10px 15px;
+            margin: 0;
+            background: #87779F;
+            color: #fff;
+            border-radius: 12px;
+            text-align: right;
+        }
+        .review-form {
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            background-color: white;
+            width: 379px;
+            height: 100%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+        }
+        .review-user-img {
+            float: right;
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-left: 10px;
+            box-shadow: 0px 0px 10px 4px rgba(0,0,0,0.3);
+        }
+        .form-control {
+            width: 250px;
+        }
+        .review-rating {
+            color: #f1c40f;
+            font-size: 21px;
+            margin-top: 10px;
+            direction: rtl;
+        }
+        .reviews-section,
+        .review-form {
+            display: none;
+        }
+        #show-more-button {
+            padding: 10px 20px;
+            border: 1px solid black;
+            border-radius: 5px;
+            background: #87779F;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 1px;
+            position: fixed;
+            bottom: 8px;
+            left: 120px;
+            transition: background-color 0.3s ease;
+            z-index: 2000;
+        }
+        #show-more-button:hover {
+            background-color: #333;
+            z-index: 3000;
+        }
+        .btn.btn-send {
+            background-color: #87779F;
+            color: white;
+            border: 1px solid black;
+            position: relative;
+            top: 10px;
+            right: 135px;
+        }
+        .btn.btn-send:hover {
+            background: #333;
+        }
+        .reviews-section {
+            width: 375px;
+            box-sizing: border-box;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            overflow: auto;
+            box-shadow: 3px 3px 11px rgba(0,0,0,0.3);
+            border-radius: 4%;
+            z-index: 2000;
+            background: linear-gradient(to right, #333333, #3C1414)
+        }
+        #chat-container {
+            position: fixed;
+            bottom: 1px;
+            right: 23px;
+            width: 350px;
+            background: #F2F2F2;
+            border-radius: 12px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+            overflow: hidden;
+            display: none;
+        }
+        #chat-container h4 {
+            padding: 10px 15px;
+            margin: 0;
+            background: #87779F;
+            color: #fff;
+            border-radius: 12px 12px 0 0;
+            text-align: right;
+        }
+        #chat-container p {
+            direction: rtl;
+        }
+        #chat-button {
+            background: #87779F;
+            color: #fff;
+            border-radius: 4%;
+            transition: background-color 0.3s ease;
+        }
+        #chat-button:hover {
+            background-color: #333;
+            color: purple;
+            transition: background-color 0.3s ease;
+        }
+        /* Chat messages container */
+        #chat-messages {
+            height: 325px;
+            overflow-y: auto;
+            padding: 1px;
+            display: flex; /* Use flexbox to position the container */
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        /* Chat message */
+        .message-container {
+            padding: 5px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            background: #ddd;
+            line-height: 1.5;
+        }
+        .username {
+            font-weight: bold;
+            color: #333;
+        }
+        .message-content {
+            margin-top: 5px;
+            color: #555;
+        }
+        /* Chat form */
+        #chat-form {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+        }
+        /* Chat input */
+        #chat-form input[type="text"] {
+            flex-grow: 1;
+            border: none;
+            padding: 5px;
+            border-radius: 12px;
+            background: #eee;
+        }
+        /* Chat button */
+        #chat-form button {
+            margin-left: 10px;
+            border: none;
+            padding: 5px 10px;
+            color: #fff;
+            border: 1px solid black;
+            border-radius: 12px;
+            background: #87779F;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        #chat-form button:hover {
+            background: #ADD8E6;
+        }
+        /* Close button */
+        #chat-container #close-button {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        /* Scrollbar styles */
+        #chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        #chat-messages::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 12px;
+        }
+        #chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .btn-success {
+            color: #fff;
+            background-color: ##32CD32;
+            border-color: #32CD32;
+        }
+
+        /* Media queries */
+        @media (max-width: 576px) {
+            .pic-box {
+                width: 100%;
+                height: auto;
+                margin-bottom: 20px;
+                box-shadow: none;
+            }
+            .pic-box img {
+                width: 100%;
+                height: auto;
+            }
+            .text-box {
+                display: inline-table;
+                margin-bottom: 20px;
+            }
+            .row {
+                margin-top: 0;
+                flex-direction: column-reverse;
+            }
+            .reviews-container {
+                overflow-y: hidden;
+                overflow-x: scroll;
+                white-space: nowrap;
+                position: absolute;
+                direction: rtl;
+                border: none;
+                bottom: -165px;
+                right: 1px;
+                width: 680px;
+            }
+            .col-md-6 {
+                display: grid;
+                justify-content: end;
+                padding-bottom: 0;
+            }
+            .review {
+                width: 70%;
+                margin-bottom: 20px;
+            }
+            .review-form {
+                width: 100%;
+                position: relative;
+                margin-bottom: 20px;
+            }
+            .btn.btn-send {
+                right: 0;
+            }
+            #show-more-button {
+                bottom: -120px;
+                position: absolute;
+                left: 0;
+            }
+            .reviews-section {
+                box-sizing: border-box;
+                overflow: auto;
+                margin-bottom: 20px;
+                bottom: -90px;
+            }
+            #chat-container {
+                bottom: 4%;
+                right: 1px;
+                width: 350px;
+                background: #F2F2F2;
+                border-radius: 12px;
+                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+                overflow: hidden;
+                display: none;
+            }
+            #show-more-button {
+                padding: 10px 20px;
+                border: 1px solid black;
+                border-radius: 5px;
+                background: #87779F;
+                color: white;
+                cursor: pointer;
+                font-size: 16px;
+                margin-top: 1px;
+                position: absolute;
+                bottom: -267px;
+                left: -271px;
+                transition: background-color 0.3s ease;
+                z-index: 2000;
+            }
+            .text-box {
+                position: relative;
+                text-align: right;
+            }
+        }
+    </style>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="text-box">
+                    <h1>{{ crew_member.name }}</h1>
+                    <p>{{ crew_member.description }}</p>
+                    <p>שכר שעתי ₪{{ crew_member.hourly_fee }}</p>
+                    {% if crew_member.available %}
+                    <p>זמינות : זמין</p>
+                    {% else %}
+                    <p>זמינות : לא זמין</p>
+                    {% endif %}
+                    <div class="review-rating">
+                        {% for i in range(crew_member.star_rating) %}
+                        ★
+                        {% endfor %}
+                        {% for i in range(10-crew_member.star_rating) %}
+                        ☆
+                        {% endfor %}
+                    </div>
+                    {% if session.get('user_id') == crew_member.user_id %}
+                    <a href="{{ url_for('delete_crew_member', crew_member_id=crew_member.id) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this crew member?');">מחק</a>
+                    <a href="{{ url_for('edit_crew_member', crew_member_id=crew_member.id) }}" class="btn btn-warning">ערוך</a>
+                    <a href="{{ url_for('toggle_availability', crew_member_id=crew_member.id) }}" class="btn btn-primary">שנה זמינות</a>
+                    {% else %}
+                    <button id="hire-button" class="btn btn-success" data-crew-member-id="{{ crew_member.id }}">שכור</button>
+                    {% endif %}
+                    {% if session.get('user_id') %}
+                    <div class="reviews-section">
+                        <div class="review-form">
+                            <h2>כתוב ביקורת</h2>
+                            <form method="POST" action="{{ url_for('submit_review', crew_member_id=crew_member.id) }}">
+                                <div class="form-group">
+                                    <label for="review-text">כתוב ביקורת: </label>
+                                    <textarea class="form-control" id="review-text" name="text" rows="3" required></textarea>
+                                    <label for="review-rating">דירוג</label>
+                                    <select class="form-control" id="review-rating" name="rating" required>
+                                        <option value="">דרג את חבר הצוות</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-send">שלח</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div id="reviews-container" class="reviews-container">
+                        {% for review in reviews %}
+                            <div class="review">
+                                {% if review.user.is_crew_member %}
+                                    <img src="{{ review.user.crew_member.profile_picture }}" alt="{{ review.user.username }}'s profile picture" class="review-user-img">
+                                {% else %}
+                                    <img src="{{ review.user.user_profile.profile_picture }}" alt="{{ review.user.username }}'s profile picture" class="review-user-img">
+                                {% endif %}
+                                <h5>{{ review.user.username }}:</h5>
+                                <div class="review-rating">
+                                    {% for i in range(review.rating) %}
+                                    ★
+                                    {% endfor %}
+                                    {% for i in range(10-review.rating) %}
+                                    ☆
+                                    {% endfor %}
+                                </div>
+                                <p>תיאור: {{ review.text }}</p>
+
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button id="show-more-button">...הצג עוד</button>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="pic-box">
+                <img src="{{ crew_member.profile_picture }}" alt="Profile Picture">
+                <div class="button-container">
+                    <button id="chat-button">שוחח עם {{ crew_member.name }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="chat-container">
+        <div class="chat-container">
+          <button id="close-button">x</button>
+          <h4>:שוחח עם {{ crew_member.name }}</h4>
+        </div>
+        <div id="chat-messages">
+          {% for message in chat_messages %}
+          <div class="message-container">
+            <p>{{ message.user.username }}: {{ message.content }}</p>
+          </div>
+          {% endfor %}
+        </div>
+        <div>
+            <form id="chat-form">
+                <input type="text" name="content" placeholder="Type your message" required>
+                <input type="hidden" id="user_id" value="{{ user_id }}">
+                <input type="hidden" id="username" value="{{ username }}">
+                <button type="submit">שלח</button>
+            </form>
+        </div>
+      </div>
+      <script>
+        // Socket.IO code
+        var socket = io();
+        socket.emit('join_room', { room: "{{ crew_member.id }}" });
+
+        // Event listener for form submission
+        document.getElementById("chat-form").addEventListener("submit", function(e) {
+        e.preventDefault();
+        var message = document.querySelector('input[name="content"]').value;
+        var user_id = "{{ session['user_id'] }}";
+        var crew_member_id = "{{ crew_member.id }}";
+        var username = "{{ session['username'] }}";
+
+        // Append the message to the chat box immediately
+        var chatMessages = document.getElementById('chat-messages');
+        var messageContainer = document.createElement('div');
+        messageContainer.className = "message-container"; // for CSS styling
+
+        var usernameElement = document.createElement('p');
+        usernameElement.textContent = username;
+        usernameElement.className = "username"; // for CSS styling
+
+        var messageElement = document.createElement('p');
+        messageElement.textContent = message;
+        messageElement.className = "message-content"; // for CSS styling
+
+        messageContainer.appendChild(usernameElement);
+        messageContainer.appendChild(messageElement);
+        chatMessages.appendChild(messageContainer);
+
+
+        socket.emit('message', {
+            user_id: user_id,
+            crew_member_id: crew_member_id,
+            content: message
+        });
+
+        document.querySelector('input[name="content"]').value = '';
+        });
+
+        socket.on('message', function(data) {
+            if (data.username !== "{{ session['username'] }}") {
+                var chatMessages = document.getElementById('chat-messages');
+                var messageContainer = document.createElement('div');
+                messageContainer.className = "message-container"; // for CSS styling
+        
+                var usernameElement = document.createElement('p');
+                usernameElement.textContent = data.username;
+                usernameElement.className = "username"; // for CSS styling
+        
+                var messageElement = document.createElement('p');
+                messageElement.textContent = data.content;
+                messageElement.className = "message-content"; // for CSS styling
+        
+                messageContainer.appendChild(usernameElement);
+                messageContainer.appendChild(messageElement);
+                chatMessages.appendChild(messageContainer);
+            }
+        });
+
+        // Event listeners for chat container
+        document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('chat-button').addEventListener('click', function() {
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.style.display = chatContainer.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.getElementById('close-button').addEventListener('click', function() {
+            document.getElementById('chat-container').style.display = 'none';
+        });
+        });
+    </script>
+    <script>
+      // Hire crew member button event listener
+      document.getElementById("hire-button").addEventListener("click", function () {
+        var crewMemberId = this.getAttribute("data-crew-member-id");
+        fetch("{{ url_for('hire_crew_member') }}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            crew_member_id: crewMemberId,
+          }),
+        })
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (data) {
+            if (data.success) {
+              alert("Crew member added to the cart.");
+            } else {
+              alert("Something went wrong. Please try again.");
+            }
+          })
+          .catch(function (error) {
+            console.error("Error:", error);
+          });
+      });
+    </script>
+    <script>
+      // Show more button event listener
+      document.getElementById("show-more-button").addEventListener("click", function () {
+        var reviewsSection = document.querySelector(".reviews-section");
+        var reviewForm = document.querySelector(".review-form");
+        if (reviewsSection.style.display === "none") {
+          reviewsSection.style.display = "block";
+          reviewForm.style.display = "block";
+          this.textContent = "הסתר";
+        } else {
+          reviewsSection.style.display = "none";
+          reviewForm.style.display = "none";
+          this.textContent = "...הצג עוד";
+        }
+      });
+
+      // Scroll the reviews container
+      window.addEventListener("DOMContentLoaded", function () {
+        var reviewsContainer = document.getElementById("reviews-container");
+        reviewsContainer.scrollLeft = reviewsContainer.scrollWidth;
+
+        setInterval(function () {
+          reviewsContainer.scrollLeft -= 1; // Adjust the scroll speed as desired
+        }, 27); // Adjust the interval duration as desired
+      });
+    </script>
+
+{% endblock %}
