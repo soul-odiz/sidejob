@@ -93,9 +93,12 @@ def csrf_protect():
         session['_csrf_token'] = secrets.token_hex(32)
     
     if request.method in ('POST', 'PUT', 'DELETE', 'PATCH'):
-        # Skip CSRF for login/signup (users may not have visited a page yet),
-        # and API endpoints that use other auth mechanisms
-        if request.path in ('/login', '/signup') or request.path.startswith('/api/'):
+        # Skip CSRF for login/signup, API, SocketIO, and health endpoints
+        if (request.path in ('/login', '/signup')
+            or request.path.startswith('/api/')
+            or request.path.startswith('/socket.io')
+            or request.path.startswith('/health')
+            or request.path.startswith('/ready')):
             return
         token = session.get('_csrf_token', '')
         request_token = request.form.get('csrf_token', '')
