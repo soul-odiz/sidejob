@@ -31,7 +31,37 @@
     </div>
 
     <header>
+        <!-- ===== TOP BAR ===== -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="nav-btn openbtn" onclick="toggleNav()" title="תפריט">☰</button>
+                {% if 'user_id' in session %}
+                <a href="{{ url_for('my_bookings') }}" class="nav-btn" title="ההזמנות שלי">📅</a>
+                <a href="{{ url_for('errands') }}" class="nav-btn" title="משימות">📋</a>
+                <button onclick="toggleSearch()" class="nav-btn" title="חיפוש">🔍</button>
+                <a href="{{ url_for('notifications') }}" class="nav-btn notification-btn" title="התראות">
+                    🔔
+                    <span id="unread-badge" class="notif-badge"></span>
+                </a>
+                <a href="{{ url_for('cart') }}" class="nav-btn" title="עגלה">🛒</a>
+                <a href="{{ url_for('edit_user') }}" class="nav-btn" title="פרופיל">👤</a>
+                {% else %}
+                <a href="{{ url_for('signup') }}" class="nav-btn" title="הרשמה">📝</a>
+                <a href="{{ url_for('login') }}" class="nav-btn" title="התחברות">🔑</a>
+                {% endif %}
+            </div>
+            <a href="{{ url_for('index') }}" class="topbar-logo">
+                <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="sideJob" class="logo-img">
+                <span class="logo-text">sideJob</span>
+            </a>
+        </div>
+
+        <!-- ===== SIDEBAR OVERLAY ===== -->
+        <div class="sidenav-overlay" id="sidenav-overlay" onclick="toggleNav()"></div>
+
+        <!-- ===== SIDEBAR ===== -->
         <div class="sidenav" id="mySidenav">
+            <button class="sidenav-close" onclick="toggleNav()">&times;</button>
             <ul>
                 <li><a href="{{ url_for('index') }}">🏠 דף הבית</a></li>
                 <li><a href="{{ url_for('errands') }}">📋 משימות</a></li>
@@ -47,28 +77,9 @@
                     {% if session.get('is_crew_member') %}
                     <li><a href="{{ url_for('crew_member_profile', crew_member_id=session.get('crew_member_id')) }}">⭐ הפרופיל שלי</a></li>
                     {% endif %}
-                <li><a href="{{ url_for('logout') }}">🚪 התנתקות</a></li>
+                <li class="sidenav-logout"><a href="{{ url_for('logout') }}">🚪 התנתקות</a></li>
                 {% endif %}
-                <li><a href="#" class="closebtn" onclick="toggleNav()">&times;</a></li>
             </ul>
-        </div>
-
-        <div class="container-fluid d-flex justify-content-end">
-            <div class="navbar">
-                <button class="openbtn" onclick="toggleNav()">☰</button>
-            </div>
-            <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='logo.jpeg') }}" alt="Logo" class="logo"></a>
-            
-            {% if 'user_id' in session %}
-            <a href="{{ url_for('my_bookings') }}" class="nav-icon-btn bookings-btn" title="ההזמנות שלי">📅</a>
-            <a href="{{ url_for('errands') }}" class="nav-icon-btn errands-btn" title="משימות">📋</a>
-            <button onclick="toggleSearch()" class="nav-icon-btn search-btn" title="חיפוש">🔍</button>
-            <a href="{{ url_for('edit_user') }}" class="nav-icon-btn user-profile-btn" title="פרופיל">👤</a>
-            <div class="notification-badge">
-                <button onclick="toggleNotifications()" class="nav-icon-btn notification-button" title="התראות">🔔</button>
-                <span class="badge" id="unread-badge" style="display:none;">0</span>
-            </div>
-            {% endif %}
         </div>
         
         <div class="notify" id="notifyDiv"></div>
@@ -97,16 +108,9 @@
             var isOpen = sidenav.classList.contains("open");
             if (isOpen) {
                 sidenav.classList.remove("open");
-                if (overlay) overlay.classList.remove("open");
+                overlay.classList.remove("open");
             } else {
                 sidenav.classList.add("open");
-                if (!overlay) {
-                    overlay = document.createElement("div");
-                    overlay.id = "sidenav-overlay";
-                    overlay.className = "sidenav-overlay";
-                    overlay.onclick = toggleNav;
-                    document.body.appendChild(overlay);
-                }
                 overlay.classList.add("open");
             }
         }
