@@ -63,12 +63,12 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 # ========== FILE UPLOAD CONFIG ==========
-UPLOAD_FOLDER = os.path.join('static', 'uploads')
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max
 
-# Ensure upload folder exists
+# Ensure upload folder exists (with absolute path)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 db = SQLAlchemy(app)
@@ -424,14 +424,26 @@ def allowed_file(filename):
 
 def save_uploaded_file(file):
     """Save an uploaded file to the uploads folder and return its URL path."""
-    if file and file.filename and allowed_file(file.filename):
-        # Generate unique filename to prevent collisions
+    if not file or not file.filename:
+        return None
+    
+    if not allowed_file(file.filename):
+        return None
+    
+    try:
+        # Generate unique filename to prevent collisions and path traversal
         ext = file.filename.rsplit('.', 1)[1].lower()
         unique_filename = f"{uuid.uuid4().hex}.{ext}"
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+        
+        # Ensure directory exists (in case it was cleaned up)
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        
         file.save(filepath)
         return f'/static/uploads/{unique_filename}'
-    return None
+    except Exception as e:
+        print(f"ERROR saving uploaded file: {e}", flush=True)
+        return None
 
 
 # ========== AUTH ROUTES ==========
