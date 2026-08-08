@@ -1,5 +1,5 @@
 from datetime import datetime, date, time, timedelta
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, Response, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -67,6 +67,7 @@ UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max
+app.config['UPLOAD_PROVIDER'] = os.environ.get('UPLOAD_PROVIDER', 'local')
 
 # Ensure upload folder exists (with absolute path)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -220,7 +221,7 @@ class CrewMember(db.Model):
     name = db.Column(db.String(100), nullable=False)
     bio = db.Column(db.String(500), nullable=True)
     hourly_fee = db.Column(db.Float, nullable=False, default=0)
-    profile_picture = db.Column(db.String(300), nullable=False, default='/static/profile.png')
+    profile_picture = db.Column(db.String(300), nullable=False, default='profile.png')
     phone = db.Column(db.String(20), nullable=True)
     location = db.Column(db.String(100), nullable=True)
     available = db.Column(db.Boolean, default=True)
@@ -423,7 +424,7 @@ def allowed_file(filename):
 
 
 def save_uploaded_file(file):
-    """Save an uploaded file to the uploads folder and return its URL path."""
+    """Save an uploaded file and return the stored filename (without path)."""
     if not file or not file.filename:
         return None
     
@@ -431,19 +432,75 @@ def save_uploaded_file(file):
         return None
     
     try:
-        # Generate unique filename to prevent collisions and path traversal
         ext = file.filename.rsplit('.', 1)[1].lower()
         unique_filename = f"{uuid.uuid4().hex}.{ext}"
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
         
-        # Ensure directory exists (in case it was cleaned up)
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        provider = app.config.get('UPLOAD_PROVIDER', 'local')
         
-        file.save(filepath)
-        return f'/static/uploads/{unique_filename}'
+        if provider == 'azure_blob':
+            from azure.storage.blob import BlobServiceClient
+            conn_str = os.environ['AZURE_STORAGE_CONNECTION_STRING']
+            container = os.environ.get('AZURE_STORAGE_CONTAINER', 'sidejob-uploads')
+            blob_client = BlobServiceClient.from_connection_string(conn_str).get_blob_client(
+                container=container, blob=unique_filename
+            )
+            blob_client.upload_blob(file, overwrite=True)
+            return unique_filename
+        else:
+            # Local storage
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+            file.save(filepath)
+            return unique_filename
     except Exception as e:
         print(f"ERROR saving uploaded file: {e}", flush=True)
         return None
+
+
+# ========== UPLOAD SERVING ==========
+
+@app.route('/uploads/<filename>')
+def serve_upload(filename):
+    """Serve uploaded files from Azure Blob or local disk."""
+    provider = app.config.get('UPLOAD_PROVIDER', 'local')
+    
+    if provider == 'azure_blob':
+        try:
+            from azure.storage.blob import BlobServiceClient
+            conn_str = os.environ['AZURE_STORAGE_CONNECTION_STRING']
+            container = os.environ.get('AZURE_STORAGE_CONTAINER', 'sidejob-uploads')
+            blob_client = BlobServiceClient.from_connection_string(conn_str).get_blob_client(
+                container=container, blob=filename
+            )
+            stream = blob_client.download_blob()
+            return Response(
+                stream.readall(),
+                status=200,
+                mimetype=stream.properties.content_settings.content_type or 'image/jpeg',
+                headers={'Cache-Control': 'public, max-age=31536000'}
+            )
+        except Exception as e:
+            print(f"ERROR serving blob {filename}: {e}", flush=True)
+            return '', 404
+    else:
+        # Local
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+
+@app.context_processor
+def inject_image_helper():
+    """Make get_image_url available to all templates."""
+    def get_image_url(stored_value):
+        if not stored_value:
+            return url_for('static', filename='profile.png')
+        if stored_value.startswith('http'):
+            return stored_value
+        if stored_value.startswith('/static/'):
+            # Legacy format — already a full path
+            return stored_value
+        # New format — just filename, serve via /uploads/
+        return url_for('serve_upload', filename=stored_value)
+    return {'get_image_url': get_image_url}
 
 
 # ========== AUTH ROUTES ==========
@@ -535,7 +592,7 @@ def signup():
             cm_phone = sanitize_input(request.form.get('cm_phone', ''))
             
             # Handle profile picture upload
-            profile_picture = '/static/profile.png'
+            profile_picture = 'profile.png'
             if 'profile_picture' in request.files:
                 file = request.files['profile_picture']
                 uploaded_path = save_uploaded_file(file)

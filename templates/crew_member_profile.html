@@ -17,7 +17,7 @@
 <div class="profile-container">
     <div class="profile-card">
         <div class="profile-header">
-            <img src="{{ crew_member.profile_picture }}" alt="{{ crew_member.name }}" class="profile-img" onerror="this.src='/static/profile.png'">
+            <img src="{{ get_image_url(crew_member.profile_picture) }}" alt="{{ crew_member.name }}" class="profile-img" onerror="this.src='{{ url_for(\"static\", filename=\"profile.png\") }}'">
             <div class="profile-info">
                 <h1>{{ crew_member.name }}</h1>
                 
@@ -111,7 +111,7 @@
         <div class="reviews-container">
             {% for review in reviews %}
             <div class="review">
-                <img src="{% if review.user.is_crew_member and review.user.crew_member %}{{ review.user.crew_member.profile_picture }}{% elif review.user.user_profile %}{{ review.user.user_profile.profile_picture }}{% else %}/static/profile.png{% endif %}" class="review-user-img" alt="{{ review.user.username }}">
+                <img src="{% if review.user.is_crew_member and review.user.crew_member %}{{ get_image_url(review.user.crew_member.profile_picture) }}{% elif review.user.user_profile %}{{ get_image_url(review.user.user_profile.profile_picture) }}{% else %}{{ url_for('static', filename='profile.png') }}{% endif %}" class="review-user-img" alt="{{ review.user.username }}">
                 <h5 style="margin:0 60px 5px 0;">{{ review.user.username }}</h5>
                 <div class="star-rating" style="margin-right:60px;">
                     {% for i in range(review.rating) %}★{% endfor %}

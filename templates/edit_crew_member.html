@@ -38,7 +38,7 @@
             <input type="file" id="profile_picture" name="profile_picture" accept="image/*">
             {% if crew_member.profile_picture %}
             <div style="margin-top:5px;">
-                <img src="{{ crew_member.profile_picture }}" alt="תמונה נוכחית" style="max-width:100px;max-height:100px;border-radius:5px;">
+                <img src="{{ get_image_url(crew_member.profile_picture) }}" alt="תמונה נוכחית" style="max-width:100px;max-height:100px;border-radius:5px;">
                 <p style="font-size:12px;color:#666;">תמונה נוכחית. בחר קובץ חדש להחלפה.</p>
             </div>
             {% endif %}
