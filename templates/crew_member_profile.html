@@ -17,7 +17,7 @@
 <div class="profile-container">
     <div class="profile-card">
         <div class="profile-header">
-            <img src="{{ get_image_url(crew_member.profile_picture) }}" alt="{{ crew_member.name }}" class="profile-img" onerror="this.src='{{ url_for(\"static\", filename=\"profile.png\") }}'">
+            <img src="{{ get_image_url(crew_member.profile_picture) }}" alt="{{ crew_member.name }}" class="profile-img" onerror="this.src='/static/profile.png'">
             <div class="profile-info">
                 <h1>{{ crew_member.name }}</h1>
                 

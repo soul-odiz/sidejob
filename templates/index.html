@@ -37,7 +37,7 @@
         {% for crew_member in crew_members %}
             <div class="col-md-4 col-sm-6" style="margin-bottom:25px;">
                 <div class="card crew-card" style="position:relative;">
-                    <img src="{{ get_image_url(crew_member.profile_picture) }}" class="card-img-top" alt="{{ crew_member.name }}" onerror="this.src='{{ url_for(\"static\", filename=\"profile.png\") }}'">
+                    <img src="{{ get_image_url(crew_member.profile_picture) }}" class="card-img-top" alt="{{ crew_member.name }}" onerror="this.src='/static/profile.png'">
                     {% if crew_member.available %}
                     <div class="availability-indicator"></div>
                     {% endif %}
