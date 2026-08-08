@@ -498,10 +498,12 @@ def inject_image_helper():
             return url_for('static', filename='profile.png')
         if stored_value == 'profile.png':
             return url_for('static', filename='profile.png')
+        if stored_value.startswith('/static/uploads/'):
+            # Legacy local path — file was on wiped ephemeral disk, use fallback
+            return url_for('static', filename='profile.png')
         if stored_value.startswith('http'):
             return stored_value
         if stored_value.startswith('/static/'):
-            # Legacy format — already a full path
             return stored_value
         # New format — just UUID filename, serve via /uploads/
         return url_for('serve_upload', filename=stored_value)
