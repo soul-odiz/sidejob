@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .error-container {
+        text-align: center;
+        padding: 100px 20px;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    .error-code {
+        font-size: 80px;
+        color: #87779F;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .error-message {
+        font-size: 24px;
+        color: #555;
+        margin-bottom: 30px;
+    }
+    .home-link {
+        display: inline-block;
+        background: #87779F;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 18px;
+    }
+    .home-link:hover { background: #333; color: white; text-decoration: none; }
+</style>
+<div class="error-container">
+    <div class="error-code">{{ error_code }}</div>
+    <div class="error-message">{{ message }}</div>
+    <a href="{{ url_for('index') }}" class="home-link">🏠 חזרה לדף הבית</a>
+</div>
+{% endblock %}

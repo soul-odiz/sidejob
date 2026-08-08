@@ -1,142 +1,83 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<style>
-    .mt-4{
-        margin-bottom: -85px;
-    }
-    .card-img-top {
-        width: 100%;
-        height: 37%;
-        object-fit: fill;
-        border-radius: 20px 20px 0 0;
-        box-shadow: 3px 4px 8px 0 rgba(0,0,0,0.4);
-        border: 1px;
-    }
-    .card {
-        width: 80%;
-        height: 85%;
-        display: flex;
-        flex-direction: column;
-        text-align: right;
-        border-radius: 20px 20px 8px 8px;
-        direction: rtl;
-        margin: 0 auto;
-        color: black;
-        border: none;
-        box-shadow: 1px 4px 10px 0 rgba(0,0,0,0.9);
-        overflow: hidden; /* Add this line to hide any overflowing content */
-        margin-left: auto;
-        margin-right: auto;
-        margin-bottom: 2rem;
-    }
-    .card-body {
-        flex: 1;
-        padding: 10px;
-        min-width: 100%;
-        align-items: flex-start;
-    }
-    .availability-indicator {
-        width: 15px;
-        height: 15px;
-        background-color: green;
-        border-radius: 50%;
-        position: absolute;
-        top: 10px;
-        right: 10px;
-    }
-    .review-rating {
-        color: #f1c40f; /* Gold color for stars */
-        font-size: 20px;
-        height: 40px;
-    }
-    #profile-btn {
-        background-color: #87779F;
-        border: none;
-    }
-    #profile-btn:hover {
-        background-color: #333;
-    }
-    .calendar-button {
-        margin: 0 auto;
-        padding: 3px 5px;
-        border: none;
-        height: 30px;
-        width: 30px;
-        color: white;
-        cursor: pointer;
-        border-radius: 50%;
-    }
-    .calendar-input {
-        display: none;
-    }
-    .button-container {
-        display: flex;
-        align-items: center;
-        margin-top: 10px;
-    }
-    .card-text {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        line-height: 1.6em;
-        max-height: 1.6em;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-    }
-    
-    .card-text.show-full {
-        -webkit-line-clamp: none; 
-        max-height: none;
-    }
-    
-    @media (max-width: 699px) {
-        .col-md-4 {
-            flex: 0 0 100%;
-            max-width: 30%;
-            margin-bottom: -80px;
-        }
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-evenly;
-            width: 200%;
-            padding-right: 30px;
-        }
-        .card {
-            width: 121%;
-        }
-    }
+<div class="page-container">
+    <!-- Search & Filter Section -->
+    <div class="filter-section">
+        <form method="GET" action="{{ url_for('index') }}">
+            <div class="search-bar" style="display:flex;gap:8px;margin-bottom:12px;justify-content:center;">
+                <input type="text" name="q" placeholder="חפש שירות, מקצוע, או שם..." value="{{ request.args.get('q', '') }}" style="flex:1;max-width:350px;padding:10px 16px;border:2px solid var(--primary-bg);border-radius:25px;outline:none;text-align:right;font-family:'Heebo',sans-serif;">
+                <button type="submit" style="width:42px;height:42px;border:none;border-radius:50%;background:var(--primary);color:white;font-size:18px;cursor:pointer;">🔍</button>
+            </div>
+            <div class="filter-row">
+                <select name="profession">
+                    <option value="">כל המקצועות</option>
+                    {% for prof in professions %}
+                    <option value="{{ prof.id }}" {% if request.args.get('profession') == prof.id|string %}selected{% endif %}>{{ prof.name }}</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="min_price" placeholder="מחיר מינימום" value="{{ request.args.get('min_price', '') }}" style="width:110px">
+                <input type="number" name="max_price" placeholder="מחיר מקסימום" value="{{ request.args.get('max_price', '') }}" style="width:110px">
+                <input type="text" name="location" placeholder="מיקום" value="{{ request.args.get('location', '') }}">
+                <label style="display:flex;align-items:center;gap:4px;font-size:14px;"><input type="checkbox" name="available" value="1" {% if request.args.get('available') == '1' %}checked{% endif %}> זמינים בלבד</label>
+                <button type="submit" class="btn-primary-custom">סנן</button>
+                <a href="{{ url_for('index') }}" style="color:var(--primary);padding:8px;">נקה</a>
+            </div>
+        </form>
+    </div>
 
-</style>
-<div class="container mt-5">
+    <!-- Crew Members Grid -->
     <div class="row">
+        {% if crew_members|length == 0 %}
+        <div class="empty-state" style="width:100%;">
+            <h3>לא נמצאו תוצאות</h3>
+            <p>נסה לחפש מקצוע אחר או נקה את המסננים</p>
+        </div>
+        {% endif %}
         {% for crew_member in crew_members %}
-            <div class="col-md-4 col-sm-6 mt-4">
-                <div class="card" id="wavy-background">
-                    <img src="{{ crew_member.profile_picture }}" class="card-img-top" alt="Profile Picture">
+            <div class="col-md-4 col-sm-6" style="margin-bottom:25px;">
+                <div class="card crew-card" style="position:relative;">
+                    <img src="{{ crew_member.profile_picture }}" class="card-img-top" alt="{{ crew_member.name }}" onerror="this.src='/static/profile.png'">
                     {% if crew_member.available %}
                     <div class="availability-indicator"></div>
                     {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ crew_member.name }}</h5>
-                        <p class="card-text" id="description-{{ crew_member.id }}">{{ crew_member.description }} <a href="#" class="show-more"></a></p>
-                        <p class="card-text">שכר שעתי: ₪{{ crew_member.hourly_fee }}</p>
-                        <p class="card-text">דירוג:</p>
-                        <div class="review-rating">
-                            {% for i in range(crew_member.star_rating) %}
-                            ★
+                        {% if crew_member.professions %}
+                        <div class="profession-tags">
+                            {% for cp in crew_member.professions[:3] %}
+                            <span class="profession-tag">{{ cp.profession.name }}</span>
                             {% endfor %}
-                            {% for i in range(10-crew_member.star_rating) %}
-                            ☆
-                            {% endfor %}
+                            {% if crew_member.professions|length > 3 %}
+                            <span class="profession-tag">+{{ crew_member.professions|length - 3 }}</span>
+                            {% endif %}
                         </div>
-                        <a href="{{ url_for('crew_member_profile', crew_member_id=crew_member.id) }}" class="btn btn-primary" id="profile-btn">הצג פרופיל</a>
-                        {% if session.get('user_id') == crew_member.user_id %}
-                        <a href="{{ url_for('delete_crew_member', crew_member_id=crew_member.id) }}" class="btn btn-danger" onclick="return confirm('האם אתה בטוח שברצונך למחוק פרופיל זה?');">מחק</a>
                         {% endif %}
-                        <img class="calendar-button" id="calendar-button-{{ crew_member.id }}" src="{{ url_for('static', filename='calendar-icon.jpeg') }}" alt="Calendar">
-                        <input class="calendar-input" id="calendar-input-{{ crew_member.id }}" type="text" placeholder="בחר תאריך">
+                        <p class="card-text" onclick="this.classList.toggle('expanded')">{{ crew_member.bio or 'אין תיאור' }}</p>
+                        <div class="crew-meta">
+                            <div class="price-tag">₪{{ crew_member.hourly_fee }}<span style="font-size:13px;font-weight:400;color:var(--gray);">/שעה</span></div>
+                            {% if crew_member.location %}
+                            <div class="location-tag">📍 {{ crew_member.location }}</div>
+                            {% endif %}
+                            <div class="star-rating" style="margin:5px 0;">
+                                {% if crew_member.rating_avg > 0 %}
+                                    {% for i in range(crew_member.rating_avg|int) %}★{% endfor %}
+                                    {% for i in range(5 - crew_member.rating_avg|int) %}☆{% endfor %}
+                                    <span class="count">({{ crew_member.rating_count }})</span>
+                                {% else %}
+                                    {% for i in range(5) %}☆{% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="action-row">
+                            <a href="{{ url_for('crew_member_profile', crew_member_id=crew_member.id) }}" class="btn-primary-custom">הצג פרופיל</a>
+                            {% if session.get('user_id') and session.get('user_id') != crew_member.user_id %}
+                            <button class="btn-success-custom" onclick="openBooking({{ crew_member.id }})">הזמן עכשיו</button>
+                            {% endif %}
+                            {% if session.get('user_id') == crew_member.user_id %}
+                            <a href="{{ url_for('delete_crew_member', crew_member_id=crew_member.id) }}" class="btn-danger-custom" onclick="return confirm('האם אתה בטוח שברצונך למחוק פרופיל זה?');">מחק</a>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -144,25 +85,129 @@
     </div>
 </div>
 
+<!-- Booking Modal -->
+<div class="modal-overlay" id="booking-modal">
+    <div class="modal-content">
+        <h3>הזמנת שירות</h3>
+        <label>בחר תאריך:</label>
+        <input type="date" id="booking-date" onchange="loadSlots()">
+        <label>בחר שעה:</label>
+        <select id="booking-time">
+            <option value="">בחר תאריך תחילה</option>
+        </select>
+        <label>תיאור העבודה:</label>
+        <textarea id="booking-description" rows="3" placeholder="תאר/י מה צריך לעשות"></textarea>
+        <label>מיקום:</label>
+        <input type="text" id="booking-location" placeholder="כתובת">
+        <div class="modal-actions">
+            <button class="confirm" onclick="confirmBooking()">אישור הזמנה</button>
+            <button class="cancel" onclick="closeBooking()">ביטול</button>
+        </div>
+        <div id="booking-result" style="margin-top:12px;text-align:center;"></div>
+    </div>
+</div>
+
+<script>
+    let selectedCrewMemberId = null;
+    
+    function openBooking(crewMemberId) {
+        selectedCrewMemberId = crewMemberId;
+        document.getElementById('booking-modal').style.display = 'block';
+        document.getElementById('booking-result').innerHTML = '';
+        // Set min date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('booking-date').min = today;
+    }
+    
+    function closeBooking() {
+        document.getElementById('booking-modal').style.display = 'none';
+        selectedCrewMemberId = null;
+    }
+    
+    function loadSlots() {
+        const date = document.getElementById('booking-date').value;
+        if (!date || !selectedCrewMemberId) return;
+        
+        const timeSelect = document.getElementById('booking-time');
+        timeSelect.innerHTML = '<option value="">טוען...</option>';
+        
+        fetch('/api/get_available_slots/' + selectedCrewMemberId + '/' + date)
+            .then(r => r.json())
+            .then(slots => {
+                timeSelect.innerHTML = '<option value="">בחר שעה</option>';
+                if (slots.length === 0) {
+                    timeSelect.innerHTML = '<option value="">לא נמצאו שעות פנויות</option>';
+                } else {
+                    slots.forEach(slot => {
+                        const opt = document.createElement('option');
+                        opt.value = slot.start + '|' + slot.end;
+                        opt.textContent = slot.label;
+                        timeSelect.appendChild(opt);
+                    });
+                }
+            })
+            .catch(() => {
+                timeSelect.innerHTML = '<option value="">שגיאה בטעינת שעות</option>';
+            });
+    }
+    
+    function confirmBooking() {
+        const date = document.getElementById('booking-date').value;
+        const timeVal = document.getElementById('booking-time').value;
+        const description = document.getElementById('booking-description').value;
+        const location = document.getElementById('booking-location').value;
+        const resultDiv = document.getElementById('booking-result');
+        
+        if (!date || !timeVal) {
+            resultDiv.innerHTML = '<p style="color:red;">נא לבחור תאריך ושעה</p>';
+            return;
+        }
+        
+        const [startTime, endTime] = timeVal.split('|');
+        
+        resultDiv.innerHTML = '<p style="color:#666;">שולח הזמנה...</p>';
+        
+        fetch('/book_crew_member', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                crew_member_id: selectedCrewMemberId,
+                date: date,
+                start_time: startTime,
+                end_time: endTime,
+                description: description,
+                location: location
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                resultDiv.innerHTML = '<p style="color:green;">ההזמנה בוצעה בהצלחה! ✅</p>';
+                setTimeout(closeBooking, 2000);
+            } else {
+                resultDiv.innerHTML = '<p style="color:red;">שגיאה: ' + (data.error || 'נסה שוב') + '</p>';
+            }
+        })
+        .catch(err => {
+            resultDiv.innerHTML = '<p style="color:red;">שגיאה: ' + err + '</p>';
+        });
+    }
+    
+    // Close modal on click outside
+    document.getElementById('booking-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeBooking();
+    });
+</script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         {% for crew_member in crew_members %}
-            var calendarButton{{ crew_member.id }} = document.getElementById('calendar-button-{{ crew_member.id }}');
-            var calendarInput{{ crew_member.id }} = document.getElementById('calendar-input-{{ crew_member.id }}');
-
-            calendarButton{{ crew_member.id }}.addEventListener('click', function() {
-                calendarInput{{ crew_member.id }}.click();
-            });
-
-            flatpickr(calendarInput{{ crew_member.id }}, {
-                // Configure the Flatpickr options
-                dateFormat: 'Y-m-d',
-                enableTime: false,
-            });
-
-            document.getElementById('description-{{ crew_member.id }}').addEventListener('click', function() {
-                this.classList.toggle('show-full');
-            });
+            var desc = document.getElementById('description-{{ crew_member.id }}');
+            if (desc) {
+                desc.addEventListener('click', function() {
+                    this.classList.toggle('show-full');
+                });
+            }
         {% endfor %}
     });
 </script>

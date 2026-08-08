@@ -1,30 +1,47 @@
-# TO DO
+# SideJob (סייד-ג'וב) — Freelance Services Platform
 
-Input Validation: The script does not perform any validation on user input. For example, in the signup route, user inputs are directly used to create a new user. This can potentially lead to SQL injection attacks. Consider using Flask-WTF or a similar library to validate form inputs.
+פלטפורמה לחיבור בין לקוחות לנותני שירות עצמאיים בישראל.
 
-Error Handling: The script currently does not include error handling. There should be proper error handlers to deal with unexpected server errors.
+## 🚀 Live
+**https://sidejob.bluedune-2855dd8a.germanywestcentral.azurecontainerapps.io**
 
-Session Timeout: There is currently no timeout for sessions. This means a user could stay logged in indefinitely, which is a potential security risk.
+## 🛠 Tech Stack
+- **Backend:** Flask 2.3 + SQLAlchemy 2.0 + SocketIO
+- **Database:** PostgreSQL (production) / SQLite (local dev)
+- **Hosting:** Azure Container Apps
+- **Container:** Docker + Gunicorn + Eventlet
 
-User Authentication: Right now, the only user authentication in place is checking the username and password during login. Consider implementing more robust user authentication, such as email confirmation or two-factor authentication.
+## 🔒 Security
+- CSRF protection on all forms
+- Rate limiting (10/min login, 5/min signup)
+- HTTPS enforced (Talisman)
+- CSP, HSTS, X-Frame-Options security headers
+- Session cookies: Secure + HttpOnly + SameSite=Lax
+- SocketIO auth required
 
-Code Modularity: To make the code more maintainable, you could consider separating the different parts of the app into different files. For example, you could move the database models to a separate file, and the routes to another file.
+## 🏃 Local Development
 
-Secure Secret Key: The secret key is hard-coded in the script. It would be better to set it through an environment variable, and definitely avoid publishing it in the code.
+```bash
+pip install -r requirements.txt
+python app.py
+```
 
-Chat Functionality: The chat function is currently not implemented. You may want to use Flask-SocketIO to implement real-time messaging.
+## 🐳 Docker
 
-Password Reset Functionality: Currently, there is no way for a user to reset their password if they forget it. Implementing a password reset function would be a good idea.
+```bash
+docker build -t sidejob .
+docker run -p 5000:5000 -e DATABASE_URL=sqlite:///site.db sidejob
+```
 
-These are some potential improvements you could make. If you want help with implementing any of these or other features, please provide more specific requirements.
+## 📂 Project Structure
 
-about.html
-
-## Installation
-
-To install Freelance Platform, you need to:
-
-1. Clone this repository: `git clone https://github.com/your-username/freelance-platform.git`
-2. Install the dependencies: `pip install -r requirements.txt`
-3. Set up the database: `python manage.py db init` `python manage.py db migrate` `python manage.py db upgrade`
-4. Run the application: `python app.py`
+```
+sideJobhebrew/
+├── app.py              # Main application
+├── requirements.txt    # Python dependencies
+├── Dockerfile          # Production container
+├── templates/          # Jinja2 templates (Hebrew)
+├── static/             # CSS, JS, images
+│   └── uploads/        # User uploads
+└── instance/           # SQLite DB (local only)
+```

@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .errands-container {
+        max-width: 900px;
+        margin: 80px auto;
+        padding: 20px;
+    }
+    h1 {
+        color: #87779F;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+    }
+    .post-btn {
+        display: block;
+        width: 200px;
+        margin: 0 auto 30px;
+        background: #87779F;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+    }
+    .post-btn:hover { background: #333; color: white; text-decoration: none; }
+    .errand-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 15px 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        direction: rtl;
+    }
+    .errand-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .errand-header h5 { margin: 0; color: #333; }
+    .budget { color: #28a745; font-weight: bold; }
+    .errand-details { color: #666; font-size: 14px; line-height: 1.8; }
+    .customer-name { color: #87779F; font-size: 13px; }
+    .propose-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .propose-btn:hover { background: #218838; color: white; text-decoration: none; }
+    .filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    .filter-bar select, .filter-bar input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .filter-bar button {
+        background: #87779F;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .proposal-form { display: none; margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; }
+    .proposal-form textarea { width: 100%; height: 80px; margin: 5px 0; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    .proposal-form input[type="number"] { width: 150px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    .proposal-form button { background: #87779F; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+    .empty-state { text-align: center; padding: 60px; color: #999; }
+</style>
+
+<div class="errands-container">
+    <h1>📋 משימות עצמאיות</h1>
+    <p class="subtitle">מחפש עבודה? הגש הצעה למשימות שמתאימות לך</p>
+    
+    {% if 'user_id' in session %}
+    <a href="{{ url_for('post_errand') }}" class="post-btn">➕ פרסם משימה</a>
+    {% endif %}
+    
+    <!-- Filter -->
+    <div class="filter-bar">
+        <form method="GET" style="display:flex;gap:10px;flex-wrap:wrap;">
+            <select name="profession">
+                <option value="">כל המקצועות</option>
+                {% for prof in professions %}
+                <option value="{{ prof.id }}">{{ prof.name }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="location" placeholder="מיקום" style="width:120px;">
+            <button type="submit">סנן</button>
+        </form>
+    </div>
+    
+    {% if errands|length == 0 %}
+    <div class="empty-state">
+        <h3>אין משימות כרגע</h3>
+        <p>עוד רגע יופיעו כאן משימות חדשות</p>
+    </div>
+    {% endif %}
+    
+    {% for errand in errands %}
+    <div class="errand-card">
+        <div class="errand-header">
+            <h5>{{ errand.title }}</h5>
+            {% if errand.profession %}
+            <span style="background:#e8e0f0;padding:2px 10px;border-radius:12px;font-size:12px;">{{ errand.profession.name }}</span>
+            {% endif %}
+        </div>
+        <p class="customer-name">📌 פורסם על ידי: {{ errand.customer.username }} {% if errand.location %} | 📍 {{ errand.location }}{% endif %}</p>
+        <div class="errand-details">
+            <p>{{ errand.description }}</p>
+            {% if errand.budget_min or errand.budget_max %}
+            <p>💰 תקציב: {% if errand.budget_min %}₪{{ errand.budget_min }}{% endif %} - {% if errand.budget_max %}₪{{ errand.budget_max }}{% endif %}</p>
+            {% endif %}
+            {% if errand.preferred_date %}
+            <p>📅 תאריך מועדף: {{ errand.preferred_date }}</p>
+            {% endif %}
+        </div>
+        
+        {% if 'user_id' in session %}
+            {% set user = get_current_user() %}
+            {% if user and user.is_crew_member %}
+            <button class="propose-btn" onclick="toggleProposal({{ errand.id }})">💰 הגש הצעה</button>
+            
+            <div id="proposal-form-{{ errand.id }}" class="proposal-form">
+                <form method="POST" action="{{ url_for('submit_proposal', errand_id=errand.id) }}">
+                    <label>המחיר שלך (₪):</label>
+                    <input type="number" name="price" step="0.01" min="1" required placeholder="לדוגמה: 200">
+                    <br>
+                    <label>תיאור ההצעה:</label>
+                    <textarea name="description" placeholder="ספר/י ללקוח למה כדאי לבחור בך..." required></textarea>
+                    <br>
+                    <button type="submit">שלח הצעה</button>
+                </form>
+            </div>
+            <script>
+                function toggleProposal(id) {
+                    var form = document.getElementById('proposal-form-' + id);
+                    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+                }
+            </script>
+            {% endif %}
+        {% else %}
+            <p style="color:#999;font-size:13px;">יש <a href="{{ url_for('login') }}" style="color:#87779F;">להתחבר</a> כדי להגיש הצעה</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

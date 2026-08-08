@@ -5,4 +5,7 @@ Flask-SocketIO==5.3.4
 Werkzeug==2.3.4
 simple-websocket==0.10.0
 flask_talisman==1.0.0
+flask_limiter==3.5.0
 pyngrok==6.0.0
+psycopg2-binary==2.9.9
+redis==5.0.1

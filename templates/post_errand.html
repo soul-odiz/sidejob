@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 80px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        direction: rtl;
+    }
+    h1 {
+        color: #87779F;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    label {
+        display: block;
+        margin: 15px 0 5px;
+        color: #555;
+        font-weight: bold;
+    }
+    input, select, textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 5px;
+    }
+    textarea {
+        height: 120px;
+        resize: vertical;
+    }
+    button {
+        background: #87779F;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 20px;
+        width: 100%;
+    }
+    button:hover { background: #333; }
+</style>
+
+<div class="form-container">
+    <h1>📋 פרסם משימה</h1>
+    <p style="text-align:center;color:#666;margin-bottom:20px;">מחפש מישהו שיבצע עבודה? פרסם משימה וקבל הצעות מעצמאיים</p>
+    
+    <form method="POST">
+        <label>כותרת המשימה *</label>
+        <input type="text" name="title" required placeholder="לדוגמה: צריך מישהו לנקות את הדירה">
+        
+        <label>תיאור מפורט</label>
+        <textarea name="description" required placeholder="תאר/י בדיוק מה צריך לעשות, איפה, ומתי..."></textarea>
+        
+        <label>קטגוריה</label>
+        <select name="profession_id">
+            <option value="">בחר קטגוריה</option>
+            {% for prof in professions %}
+            <option value="{{ prof.id }}">{{ prof.name }}</option>
+            {% endfor %}
+        </select>
+        
+        <label>מיקום</label>
+        <input type="text" name="location" placeholder="עיר/אזור (לדוגמה: תל אביב)">
+        
+        <div style="display:flex;gap:10px;">
+            <div style="flex:1;">
+                <label>תקציב מינימום (₪)</label>
+                <input type="number" name="budget_min" step="0.01" min="0" placeholder="100">
+            </div>
+            <div style="flex:1;">
+                <label>תקציב מקסימום (₪)</label>
+                <input type="number" name="budget_max" step="0.01" min="0" placeholder="500">
+            </div>
+        </div>
+        
+        <label>תאריך מועדף</label>
+        <input type="date" name="preferred_date">
+        
+        <button type="submit">📤 פרסם משימה</button>
+    </form>
+</div>
+{% endblock %}

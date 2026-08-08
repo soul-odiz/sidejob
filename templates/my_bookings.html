@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .bookings-container {
+        max-width: 900px;
+        margin: 80px auto;
+        padding: 20px;
+    }
+    h1 {
+        color: #87779F;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    h2 {
+        color: #555;
+        margin: 30px 0 15px;
+        font-size: 22px;
+        border-bottom: 2px solid #87779F;
+        padding-bottom: 8px;
+    }
+    .booking-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 15px 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        direction: rtl;
+    }
+    .booking-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .booking-header h5 {
+        margin: 0;
+        color: #333;
+    }
+    .status {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: bold;
+    }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-confirmed { background: #d4edda; color: #155724; }
+    .status-completed { background: #cce5ff; color: #004085; }
+    .status-cancelled { background: #f8d7da; color: #721c24; }
+    .booking-details {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.8;
+    }
+    .booking-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    .booking-actions a {
+        padding: 8px 16px;
+        border-radius: 4px;
+        text-decoration: none;
+        color: white;
+        font-size: 14px;
+    }
+    .btn-confirm { background: #28a745; }
+    .btn-complete { background: #007bff; }
+    .btn-cancel { background: #dc3545; }
+    .btn-review { background: #87779F; }
+    .empty-state {
+        text-align: center;
+        padding: 60px;
+        color: #999;
+    }
+    .empty-state h3 { margin-bottom: 10px; }
+</style>
+
+<div class="bookings-container">
+    <h1>📅 ההזמנות שלי</h1>
+    
+    {% if is_crew %}
+    <h2>📩 הזמנות שהתקבלו (כספק)</h2>
+    {% if bookings_as_crew and bookings_as_crew|length > 0 %}
+        {% for booking in bookings_as_crew %}
+        <div class="booking-card">
+            <div class="booking-header">
+                <h5>{{ booking.customer.full_name() or booking.customer.username }}</h5>
+                <span class="status status-{{ booking.status }}">
+                    {% if booking.status == 'pending' %}⏳ ממתין לאישור
+                    {% elif booking.status == 'confirmed' %}✅ אושר
+                    {% elif booking.status == 'completed' %}✔️ הושלם
+                    {% elif booking.status == 'cancelled' %}❌ בוטל
+                    {% endif %}
+                </span>
+            </div>
+            <div class="booking-details">
+                <p><strong>תאריך:</strong> {{ booking.booking_date }} | <strong>שעה:</strong> {{ booking.start_time }} - {{ booking.end_time }}</p>
+                <p><strong>משך:</strong> {{ booking.duration_hours }} שעות | <strong>סה"כ:</strong> ₪{{ booking.total_price }}</p>
+                {% if booking.description %}<p><strong>תיאור:</strong> {{ booking.description }}</p>{% endif %}
+                {% if booking.location %}<p><strong>מיקום:</strong> {{ booking.location }}</p>{% endif %}
+            </div>
+            <div class="booking-actions">
+                {% if booking.status == 'pending' %}
+                <a href="{{ url_for('confirm_booking', booking_id=booking.id) }}" class="btn-confirm">✅ אשר הזמנה</a>
+                <a href="{{ url_for('cancel_booking', booking_id=booking.id) }}" class="btn-cancel" onclick="return confirm('לבטל הזמנה?')">❌ בטל</a>
+                {% elif booking.status == 'confirmed' %}
+                <a href="{{ url_for('complete_booking', booking_id=booking.id) }}" class="btn-complete" onclick="return confirm('לסמן כהושלם?')">✔️ סמן כהושלם</a>
+                <a href="{{ url_for('cancel_booking', booking_id=booking.id) }}" class="btn-cancel" onclick="return confirm('לבטל הזמנה?')">❌ בטל</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <h3>אין הזמנות שהתקבלו</h3>
+            <p>כשיזמינו אותך, ההזמנות יופיעו כאן</p>
+        </div>
+    {% endif %}
+    {% endif %}
+    
+    <h2>📋 ההזמנות שלי (כלקוח)</h2>
+    {% if bookings_as_customer and bookings_as_customer|length > 0 %}
+        {% for booking in bookings_as_customer %}
+        <div class="booking-card">
+            <div class="booking-header">
+                <h5>{{ booking.crew_member.name }}</h5>
+                <span class="status status-{{ booking.status }}">
+                    {% if booking.status == 'pending' %}⏳ ממתין לאישור
+                    {% elif booking.status == 'confirmed' %}✅ אושר
+                    {% elif booking.status == 'completed' %}✔️ הושלם
+                    {% elif booking.status == 'cancelled' %}❌ בוטל
+                    {% endif %}
+                </span>
+            </div>
+            <div class="booking-details">
+                <p><strong>תאריך:</strong> {{ booking.booking_date }} | <strong>שעה:</strong> {{ booking.start_time }} - {{ booking.end_time }}</p>
+                <p><strong>משך:</strong> {{ booking.duration_hours }} שעות | <strong>סה"כ:</strong> ₪{{ booking.total_price }}</p>
+                {% if booking.description %}<p><strong>תיאור:</strong> {{ booking.description }}</p>{% endif %}
+                {% if booking.location %}<p><strong>מיקום:</strong> {{ booking.location }}</p>{% endif %}
+            </div>
+            <div class="booking-actions">
+                {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+                <a href="{{ url_for('cancel_booking', booking_id=booking.id) }}" class="btn-cancel" onclick="return confirm('לבטל הזמנה?')">❌ בטל הזמנה</a>
+                {% endif %}
+                {% if booking.status == 'completed' %}
+                <a href="{{ url_for('crew_member_profile', crew_member_id=booking.crew_member.id) }}" class="btn-review">⭐ השאר ביקורת</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <h3>אין הזמנות</h3>
+            <p>עדיין לא הזמנת אף שירות. <a href="{{ url_for('index') }}" style="color:#87779F;">חפש שירות עכשיו</a></p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

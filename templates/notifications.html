@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .notif-container {
+        max-width: 700px;
+        margin: 80px auto;
+        padding: 20px;
+        direction: rtl;
+    }
+    h1 { color: #87779F; text-align: center; margin-bottom: 30px; }
+    .notif-card {
+        background: white;
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin: 10px 0;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: 0.2s;
+    }
+    .notif-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    .notif-card.unread { border-right: 4px solid #87779F; background: #f8f6fc; }
+    .notif-content { flex: 1; }
+    .notif-title { font-weight: bold; color: #333; margin-bottom: 5px; }
+    .notif-text { color: #666; font-size: 14px; }
+    .notif-time { color: #999; font-size: 12px; margin-top: 5px; }
+    .notif-link { color: #87779F; text-decoration: none; font-size: 13px; }
+    .empty-state { text-align: center; padding: 60px; color: #999; }
+    .mark-read-btn {
+        background: none;
+        border: 1px solid #87779F;
+        color: #87779F;
+        padding: 4px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+</style>
+
+<div class="notif-container">
+    <h1>🔔 התראות</h1>
+    
+    {% if notifications|length == 0 %}
+    <div class="empty-state">
+        <h3>אין התראות</h3>
+        <p>כשיהיו התראות חדשות, הן יופיעו כאן</p>
+    </div>
+    {% endif %}
+    
+    {% for notif in notifications %}
+    <div class="notif-card {% if not notif.is_read %}unread{% endif %}">
+        <div class="notif-content">
+            <div class="notif-title">{{ notif.title }}</div>
+            <div class="notif-text">{{ notif.content }}</div>
+            <div class="notif-time">{{ notif.timestamp.strftime('%d/%m/%Y %H:%M') }}</div>
+            {% if notif.link %}
+            <a href="{{ notif.link }}" class="notif-link">👈 צפה</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

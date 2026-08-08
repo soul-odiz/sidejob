@@ -1,622 +1,342 @@
 {% extends 'base.html' %}
 {% block content %}
-    <style>
-        form {
-            display: flex;
-            direction: rtl;
-            padding: 10px;
-        }
-        form textarea {
-            flex-grow: 1;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-family: Arial;
-            font-size: 14px;
-            padding: 10px;
-            height: 50px;
-        }
-        form button {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 5px;
-            margin-left: 900px;
-            color: white;
-            cursor: pointer;
-            background-color: #333;
-            color: #fff;
-            margin-left: 0;
-        }
-        form button:hover {
-            background-color: #0056b3;
-        }
-        h1 {
-            direction: rtl;
-            text-align: right;
-        }
-        .pic-box {
-            border: none;
-            border-radius: 30px;
-            padding: 0px;
-            width: 320px;
-            height: 400px;
-            overflow: hidden;
-            position: relative;
-            direction: rtl;
-            right: -310px;
-            top: -19px;
-            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4);
-        }
-        .pic-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .text-box {
-            position: relative;
-            right: -305px;
-            top: -9px;
-            text-align: right;
-        }
-        .row {
-            margin-top: 80px;
-        }
-        .button-container {
-            position: absolute;
-            bottom: 0px;
-            width: 100%;
-            text-align: center;
-        }
-        .reviews-container {
-            overflow-y: hidden;
-            overflow-x: scroll;
-            white-space: nowrap;
-            position: absolute;
-            direction: rtl;
-            border: none;
-            bottom: -185px;
-            right: 0;
-            width: 970px;
-        }
-        .reviews-container::-webkit-scrollbar {
-            display: none; /* Hide the scrollbar for WebKit browsers */
-        }
-        .review {
-            display: inline-block;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #f5f5f5;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            width: 40%;
-            height: 135px;
-            direction: rtl;
-        }
-        .review-form h2 {
-            padding: 10px 15px;
-            margin: 0;
-            background: #87779F;
-            color: #fff;
-            border-radius: 12px;
-            text-align: right;
-        }
-        .review-form {
-            border: 1px solid #ddd;
-            border-radius: 15px;
-            background-color: white;
-            width: 379px;
-            height: 100%;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            position: fixed;
-        }
-        .review-user-img {
-            float: right;
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin-left: 10px;
-            box-shadow: 0px 0px 10px 4px rgba(0,0,0,0.3);
-        }
-        .form-control {
-            width: 250px;
-        }
-        .review-rating {
-            color: #f1c40f;
-            font-size: 21px;
-            margin-top: 10px;
-            direction: rtl;
-        }
-        .reviews-section,
-        .review-form {
-            display: none;
-        }
-        #show-more-button {
-            padding: 10px 20px;
-            border: 1px solid black;
-            border-radius: 5px;
-            background: #87779F;
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 1px;
-            position: fixed;
-            bottom: 8px;
-            left: 120px;
-            transition: background-color 0.3s ease;
-            z-index: 2000;
-        }
-        #show-more-button:hover {
-            background-color: #333;
-            z-index: 3000;
-        }
-        .btn.btn-send {
-            background-color: #87779F;
-            color: white;
-            border: 1px solid black;
-            position: relative;
-            top: 10px;
-            right: 135px;
-        }
-        .btn.btn-send:hover {
-            background: #333;
-        }
-        .reviews-section {
-            width: 375px;
-            box-sizing: border-box;
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            overflow: auto;
-            box-shadow: 3px 3px 11px rgba(0,0,0,0.3);
-            border-radius: 4%;
-            z-index: 2000;
-            background: linear-gradient(to right, #333333, #3C1414)
-        }
-        #chat-container {
-            position: fixed;
-            bottom: 1px;
-            right: 23px;
-            width: 350px;
-            background: #F2F2F2;
-            border-radius: 12px;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-            overflow: hidden;
-            display: none;
-        }
-        #chat-container h4 {
-            padding: 10px 15px;
-            margin: 0;
-            background: #87779F;
-            color: #fff;
-            border-radius: 12px 12px 0 0;
-            text-align: right;
-        }
-        #chat-container p {
-            direction: rtl;
-        }
-        #chat-button {
-            background: #87779F;
-            color: #fff;
-            border-radius: 4%;
-            transition: background-color 0.3s ease;
-        }
-        #chat-button:hover {
-            background-color: #333;
-            color: purple;
-            transition: background-color 0.3s ease;
-        }
-        /* Chat messages container */
-        #chat-messages {
-            height: 325px;
-            overflow-y: auto;
-            padding: 1px;
-            display: flex; /* Use flexbox to position the container */
-            flex-direction: column;
-            align-items: flex-end;
-        }
-        /* Chat message */
-        .message-container {
-            padding: 5px;
-            margin-bottom: 10px;
-            border-radius: 12px;
-            background: #ddd;
-            line-height: 1.5;
-        }
-        .username {
-            font-weight: bold;
-            color: #333;
-        }
-        .message-content {
-            margin-top: 5px;
-            color: #555;
-        }
-        /* Chat form */
-        #chat-form {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-        }
-        /* Chat input */
-        #chat-form input[type="text"] {
-            flex-grow: 1;
-            border: none;
-            padding: 5px;
-            border-radius: 12px;
-            background: #eee;
-        }
-        /* Chat button */
-        #chat-form button {
-            margin-left: 10px;
-            border: none;
-            padding: 5px 10px;
-            color: #fff;
-            border: 1px solid black;
-            border-radius: 12px;
-            background: #87779F;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        #chat-form button:hover {
-            background: #ADD8E6;
-        }
-        /* Close button */
-        #chat-container #close-button {
-            position: absolute;
-            left: 10px;
-            top: 10px;
-            border: none;
-            background: transparent;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-        }
-        /* Scrollbar styles */
-        #chat-messages::-webkit-scrollbar {
-            width: 6px;
-        }
-        #chat-messages::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        #chat-messages::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 12px;
-        }
-        #chat-messages::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-        .btn-success {
-            color: #fff;
-            background-color: ##32CD32;
-            border-color: #32CD32;
-        }
+<style>
+    /* Keep only the absolutely-positioned layout styles unique to this page */
+    .reviews-container { overflow-y: hidden; overflow-x: scroll; white-space: nowrap; position: relative; direction: rtl; border: none; }
+    .reviews-container::-webkit-scrollbar { display: none; }
+    .review { display: inline-block; border: 1px solid #ccc; border-radius: 10px; padding: 10px; margin-bottom: 10px; background-color: #f5f5f5; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); width: 40%; height: 135px; direction: rtl; vertical-align: top; margin-left: 10px; }
+    .review-user-img { float: right; width: 50px; height: 50px; object-fit: cover; border-radius: 50%; margin-left: 10px; box-shadow: 0px 0px 10px 4px rgba(0,0,0,0.3); }
+    #show-more-button { padding: 10px 20px; border: 1px solid black; border-radius: 5px; background: #87779F; color: white; cursor: pointer; font-size: 16px; margin-top: 1px; transition: background-color 0.3s ease; }
+    #show-more-button:hover { background-color: #333; }
+    .btn-send { background-color: var(--primary); color: white; border: 1px solid black; }
+    .btn-send:hover { background: #333; }
+    .reviews-section { width: 375px; box-sizing: border-box; position: fixed; left: 0; top: 0; bottom: 0; overflow: auto; box-shadow: 3px 3px 11px rgba(0,0,0,0.3); border-radius: 4%; z-index: 2000; background: linear-gradient(to right, #333333, #3C1414) }
+    @media (max-width: 576px) { .reviews-container { width: 100%; } .review { width: 70%; } .reviews-section { width: 90%; bottom: auto; } }
+</style>
 
-        /* Media queries */
-        @media (max-width: 576px) {
-            .pic-box {
-                width: 100%;
-                height: auto;
-                margin-bottom: 20px;
-                box-shadow: none;
-            }
-            .pic-box img {
-                width: 100%;
-                height: auto;
-            }
-            .text-box {
-                display: inline-table;
-                margin-bottom: 20px;
-            }
-            .row {
-                margin-top: 0;
-                flex-direction: column-reverse;
-            }
-            .reviews-container {
-                overflow-y: hidden;
-                overflow-x: scroll;
-                white-space: nowrap;
-                position: absolute;
-                direction: rtl;
-                border: none;
-                bottom: -165px;
-                right: 1px;
-                width: 680px;
-            }
-            .col-md-6 {
-                display: grid;
-                justify-content: end;
-                padding-bottom: 0;
-            }
-            .review {
-                width: 70%;
-                margin-bottom: 20px;
-            }
-            .review-form {
-                width: 100%;
-                position: relative;
-                margin-bottom: 20px;
-            }
-            .btn.btn-send {
-                right: 0;
-            }
-            #show-more-button {
-                bottom: -120px;
-                position: absolute;
-                left: 0;
-            }
-            .reviews-section {
-                box-sizing: border-box;
-                overflow: auto;
-                margin-bottom: 20px;
-                bottom: -90px;
-            }
-            #chat-container {
-                bottom: 4%;
-                right: 1px;
-                width: 350px;
-                background: #F2F2F2;
-                border-radius: 12px;
-                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-                overflow: hidden;
-                display: none;
-            }
-            #show-more-button {
-                padding: 10px 20px;
-                border: 1px solid black;
-                border-radius: 5px;
-                background: #87779F;
-                color: white;
-                cursor: pointer;
-                font-size: 16px;
-                margin-top: 1px;
-                position: absolute;
-                bottom: -267px;
-                left: -271px;
-                transition: background-color 0.3s ease;
-                z-index: 2000;
-            }
-            .text-box {
-                position: relative;
-                text-align: right;
-            }
-        }
-    </style>
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="text-box">
-                    <h1>{{ crew_member.name }}</h1>
-                    <p>{{ crew_member.description }}</p>
-                    <p>שכר שעתי ₪{{ crew_member.hourly_fee }}</p>
-                    {% if crew_member.available %}
-                    <p>זמינות : זמין</p>
-                    {% else %}
-                    <p>זמינות : לא זמין</p>
-                    {% endif %}
-                    <div class="review-rating">
-                        {% for i in range(crew_member.star_rating) %}
-                        ★
-                        {% endfor %}
-                        {% for i in range(10-crew_member.star_rating) %}
-                        ☆
-                        {% endfor %}
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <img src="{{ crew_member.profile_picture }}" alt="{{ crew_member.name }}" class="profile-img" onerror="this.src='/static/profile.png'">
+            <div class="profile-info">
+                <h1>{{ crew_member.name }}</h1>
+                
+                {% if professions %}
+                <div class="profession-tags" style="margin:8px 0;">
+                    {% for cp in professions %}
+                    <span class="profession-tag">{{ cp.profession.name }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="bio">{{ crew_member.bio or 'אין תיאור' }}</div>
+                
+                <div class="profile-meta">
+                    <div class="profile-meta-item">
+                        <span class="icon">💰</span>
+                        <span>שכר שעתי: <span class="value">₪{{ crew_member.hourly_fee }}</span></span>
                     </div>
-                    {% if session.get('user_id') == crew_member.user_id %}
-                    <a href="{{ url_for('delete_crew_member', crew_member_id=crew_member.id) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this crew member?');">מחק</a>
-                    <a href="{{ url_for('edit_crew_member', crew_member_id=crew_member.id) }}" class="btn btn-warning">ערוך</a>
-                    <a href="{{ url_for('toggle_availability', crew_member_id=crew_member.id) }}" class="btn btn-primary">שנה זמינות</a>
-                    {% else %}
-                    <button id="hire-button" class="btn btn-success" data-crew-member-id="{{ crew_member.id }}">שכור</button>
-                    {% endif %}
-                    {% if session.get('user_id') %}
-                    <div class="reviews-section">
-                        <div class="review-form">
-                            <h2>כתוב ביקורת</h2>
-                            <form method="POST" action="{{ url_for('submit_review', crew_member_id=crew_member.id) }}">
-                                <div class="form-group">
-                                    <label for="review-text">כתוב ביקורת: </label>
-                                    <textarea class="form-control" id="review-text" name="text" rows="3" required></textarea>
-                                    <label for="review-rating">דירוג</label>
-                                    <select class="form-control" id="review-rating" name="rating" required>
-                                        <option value="">דרג את חבר הצוות</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
-                                    </select>
-                                    <button type="submit" class="btn btn-send">שלח</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div id="reviews-container" class="reviews-container">
-                        {% for review in reviews %}
-                            <div class="review">
-                                {% if review.user.is_crew_member %}
-                                    <img src="{{ review.user.crew_member.profile_picture }}" alt="{{ review.user.username }}'s profile picture" class="review-user-img">
+                    <div class="profile-meta-item">
+                        <span class="icon">📊</span>
+                        <span>דירוג: 
+                            <span class="star-rating">
+                                {% if crew_member.rating_avg %}
+                                    {% for i in range(crew_member.rating_avg|int) %}★{% endfor %}
+                                    {% for i in range(5 - crew_member.rating_avg|int) %}☆{% endfor %}
+                                    <span class="count">({{ crew_member.rating_count }})</span>
                                 {% else %}
-                                    <img src="{{ review.user.user_profile.profile_picture }}" alt="{{ review.user.username }}'s profile picture" class="review-user-img">
+                                    {% for i in range(5) %}☆{% endfor %}
+                                    <span class="count">(עדיין אין דירוג)</span>
                                 {% endif %}
-                                <h5>{{ review.user.username }}:</h5>
-                                <div class="review-rating">
-                                    {% for i in range(review.rating) %}
-                                    ★
-                                    {% endfor %}
-                                    {% for i in range(10-review.rating) %}
-                                    ☆
-                                    {% endfor %}
-                                </div>
-                                <p>תיאור: {{ review.text }}</p>
-
-                            </div>
-                        {% endfor %}
+                            </span>
+                        </span>
                     </div>
-                    <button id="show-more-button">...הצג עוד</button>
+                    <div class="profile-meta-item">
+                        <span class="icon">✅</span>
+                        <span>זמינות: <span class="value" style="color:{% if crew_member.available %}var(--success){% else %}var(--danger){% endif %};">{% if crew_member.available %}זמין{% else %}לא זמין{% endif %}</span></span>
+                    </div>
+                    {% if crew_member.location %}
+                    <div class="profile-meta-item">
+                        <span class="icon">📍</span>
+                        <span>מיקום: <span class="value">{{ crew_member.location }}</span></span>
+                    </div>
+                    {% endif %}
+                    {% if crew_member.phone %}
+                    <div class="profile-meta-item">
+                        <span class="icon">📞</span>
+                        <span>טלפון: <span class="value">{{ crew_member.phone }}</span></span>
+                    </div>
                     {% endif %}
                 </div>
-            </div>
-            <div class="pic-box">
-                <img src="{{ crew_member.profile_picture }}" alt="Profile Picture">
-                <div class="button-container">
-                    <button id="chat-button">שוחח עם {{ crew_member.name }}</button>
+                
+                <div class="profile-actions">
+                    {% if session.get('user_id') == crew_member.user_id %}
+                        <a href="{{ url_for('edit_crew_member', crew_member_id=crew_member.id) }}" class="btn-primary-custom">✏️ ערוך פרופיל</a>
+                        <a href="{{ url_for('edit_working_hours', crew_member_id=crew_member.id) }}" class="btn-primary-custom">⚙️ שעות עבודה</a>
+                        <a href="{{ url_for('toggle_availability', crew_member_id=crew_member.id) }}" class="btn-primary-custom">{% if crew_member.available %}🔴 הפוך ללא זמין{% else %}🟢 הפוך לזמין{% endif %}</a>
+                        <a href="{{ url_for('delete_crew_member', crew_member_id=crew_member.id) }}" class="btn-danger-custom" onclick="return confirm('האם אתה בטוח?');">🗑️ מחק</a>
+                    {% else %}
+                        <button class="btn-primary-custom" onclick="openBooking({{ crew_member.id }})">📅 הזמן עכשיו</button>
+                        <button class="btn-success-custom" id="hire-button" data-crew-member-id="{{ crew_member.id }}">➕ הוסף לעגלה</button>
+                        <button class="btn-primary-custom" id="chat-button">💬 שוחח</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-    <div id="chat-container">
-        <div class="chat-container">
-          <button id="close-button">x</button>
-          <h4>:שוחח עם {{ crew_member.name }}</h4>
+
+    <!-- Working Hours Display -->
+    {% if working_hours %}
+    <div class="reviews-section-custom" style="margin-top:20px;">
+        <div class="reviews-header"><h2>🕐 שעות עבודה</h2></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;padding:10px;">
+            {% for wh in working_hours %}
+            <div style="background:var(--primary-bg);padding:8px 14px;border-radius:8px;font-size:14px;">
+                <strong>{{ wh.DAY_NAMES[wh.day_of_week] if wh.DAY_NAMES is defined else '' }}{{ ['שני','שלישי','רביעי','חמישי','שישי','שבת','ראשון'][wh.day_of_week] }}</strong>: 
+                {{ wh.start_time }} - {{ wh.end_time }}
+            </div>
+            {% endfor %}
         </div>
-        <div id="chat-messages">
-          {% for message in chat_messages %}
-          <div class="message-container">
-            <p>{{ message.user.username }}: {{ message.content }}</p>
-          </div>
-          {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Reviews Section -->
+    <div class="reviews-section-custom" style="margin-top:20px;">
+        <div class="reviews-header">
+            <h2>⭐ ביקורות ({{ reviews|length }})</h2>
+            <button id="show-more-button">...הצג עוד</button>
         </div>
-        <div>
-            <form id="chat-form">
-                <input type="text" name="content" placeholder="Type your message" required>
-                <input type="hidden" id="user_id" value="{{ user_id }}">
-                <input type="hidden" id="username" value="{{ username }}">
-                <button type="submit">שלח</button>
+        
+        {% if reviews %}
+        <div class="reviews-container">
+            {% for review in reviews %}
+            <div class="review">
+                <img src="{% if review.user.is_crew_member and review.user.crew_member %}{{ review.user.crew_member.profile_picture }}{% elif review.user.user_profile %}{{ review.user.user_profile.profile_picture }}{% else %}/static/profile.png{% endif %}" class="review-user-img" alt="{{ review.user.username }}">
+                <h5 style="margin:0 60px 5px 0;">{{ review.user.username }}</h5>
+                <div class="star-rating" style="margin-right:60px;">
+                    {% for i in range(review.rating) %}★{% endfor %}
+                    {% for i in range(5-review.rating) %}☆{% endfor %}
+                </div>
+                <p style="margin:8px 0 0;font-size:13px;color:#555;">{{ review.text }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state" style="padding:30px;">
+            <p>עדיין אין ביקורות. היה/י הראשון להשאיר ביקורת!</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Review Form (hidden by default) -->
+    {% if session.get('user_id') %}
+    <div class="reviews-section" id="reviews-section" style="display:none;">
+        <div class="review-form" style="border:1px solid #ddd;border-radius:15px;background-color:white;padding:20px;box-shadow:0 0 10px rgba(0,0,0,0.1);">
+            <h2 style="padding:10px 15px;margin:0 0 15px;background:#87779F;color:#fff;border-radius:12px;text-align:right;">כתוב ביקורת</h2>
+            <form method="POST" action="{{ url_for('submit_review', crew_member_id=crew_member.id) }}">
+                <div class="form-group">
+                    <label for="review-text">כתוב ביקורת:</label>
+                    <textarea class="form-control" id="review-text" name="text" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="review-rating">דירוג</label>
+                    <select class="form-control" id="review-rating" name="rating" required>
+                        <option value="">דרג את חבר הצוות</option>
+                        {% for i in range(1, 6) %}
+                        <option value="{{ i }}">{{ i }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn-send" style="padding:10px 20px;border-radius:5px;cursor:pointer;width:100%;font-size:16px;">שלח ביקורת</button>
             </form>
         </div>
-      </div>
-      <script>
-        // Socket.IO code
-        var socket = io();
-        socket.emit('join_room', { room: "{{ crew_member.id }}" });
+        <button onclick="closeReviews()" style="position:absolute;top:10px;left:10px;background:transparent;border:none;color:white;font-size:28px;cursor:pointer;">&times;</button>
+    </div>
+    {% endif %}
+</div>
 
-        // Event listener for form submission
-        document.getElementById("chat-form").addEventListener("submit", function(e) {
-        e.preventDefault();
-        var message = document.querySelector('input[name="content"]').value;
-        var user_id = "{{ session['user_id'] }}";
-        var crew_member_id = "{{ crew_member.id }}";
-        var username = "{{ session['username'] }}";
+<!-- Chat Container -->
+<div class="chat-container-custom" id="chat-container">
+    <div class="chat-header">
+        <h4>שוחח עם {{ crew_member.name }}</h4>
+        <button class="chat-close" id="close-button">&times;</button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+        {% for message in chat_messages %}
+        <div class="chat-message" style="{% if message.user_id == session['user_id'] %}align-self:flex-start;background:var(--primary);{% endif %}">
+            <div class="sender">{{ message.user.username }}</div>
+            <div class="msg-text" style="{% if message.user_id == session['user_id'] %}color:white;{% endif %}">{{ message.content }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="הקלד הודעה..." required>
+        <button onclick="sendMessage()">➤</button>
+    </div>
+</div>
 
-        // Append the message to the chat box immediately
-        var chatMessages = document.getElementById('chat-messages');
-        var messageContainer = document.createElement('div');
-        messageContainer.className = "message-container"; // for CSS styling
+<script>
+    // Socket.IO
+    var socket = io();
+    socket.emit('join_room', { room: "{{ crew_member.id }}" });
 
-        var usernameElement = document.createElement('p');
-        usernameElement.textContent = username;
-        usernameElement.className = "username"; // for CSS styling
-
-        var messageElement = document.createElement('p');
-        messageElement.textContent = message;
-        messageElement.className = "message-content"; // for CSS styling
-
-        messageContainer.appendChild(usernameElement);
-        messageContainer.appendChild(messageElement);
-        chatMessages.appendChild(messageContainer);
-
-
+    function sendMessage() {
+        var input = document.getElementById('chat-input');
+        var message = input.value.trim();
+        if (!message) return;
+        
+        fetch('/chat_with_crew_member/{{ crew_member.id }}', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'content=' + encodeURIComponent(message)
+        });
+        
         socket.emit('message', {
-            user_id: user_id,
-            crew_member_id: crew_member_id,
+            user_id: "{{ session['user_id'] }}",
+            crew_member_id: "{{ crew_member.id }}",
             content: message
         });
-
-        document.querySelector('input[name="content"]').value = '';
-        });
-
-        socket.on('message', function(data) {
-            if (data.username !== "{{ session['username'] }}") {
-                var chatMessages = document.getElementById('chat-messages');
-                var messageContainer = document.createElement('div');
-                messageContainer.className = "message-container"; // for CSS styling
         
-                var usernameElement = document.createElement('p');
-                usernameElement.textContent = data.username;
-                usernameElement.className = "username"; // for CSS styling
-        
-                var messageElement = document.createElement('p');
-                messageElement.textContent = data.content;
-                messageElement.className = "message-content"; // for CSS styling
-        
-                messageContainer.appendChild(usernameElement);
-                messageContainer.appendChild(messageElement);
-                chatMessages.appendChild(messageContainer);
-            }
-        });
+        input.value = '';
+    }
 
-        // Event listeners for chat container
-        document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('chat-button').addEventListener('click', function() {
-            const chatContainer = document.getElementById('chat-container');
-            chatContainer.style.display = chatContainer.style.display === 'none' ? 'block' : 'none';
-        });
-
-        document.getElementById('close-button').addEventListener('click', function() {
-            document.getElementById('chat-container').style.display = 'none';
-        });
-        });
-    </script>
-    <script>
-      // Hire crew member button event listener
-      document.getElementById("hire-button").addEventListener("click", function () {
-        var crewMemberId = this.getAttribute("data-crew-member-id");
-        fetch("{{ url_for('hire_crew_member') }}", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            crew_member_id: crewMemberId,
-          }),
-        })
-          .then(function (response) {
-            return response.json();
-          })
-          .then(function (data) {
-            if (data.success) {
-              alert("Crew member added to the cart.");
-            } else {
-              alert("Something went wrong. Please try again.");
-            }
-          })
-          .catch(function (error) {
-            console.error("Error:", error);
-          });
-      });
-    </script>
-    <script>
-      // Show more button event listener
-      document.getElementById("show-more-button").addEventListener("click", function () {
-        var reviewsSection = document.querySelector(".reviews-section");
-        var reviewForm = document.querySelector(".review-form");
-        if (reviewsSection.style.display === "none") {
-          reviewsSection.style.display = "block";
-          reviewForm.style.display = "block";
-          this.textContent = "הסתר";
-        } else {
-          reviewsSection.style.display = "none";
-          reviewForm.style.display = "none";
-          this.textContent = "...הצג עוד";
+    socket.on('message', function(data) {
+        var chatMessages = document.getElementById('chat-messages');
+        var msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-message';
+        if (data.username === "{{ session['username'] }}") {
+            msgDiv.style.alignSelf = 'flex-start';
+            msgDiv.style.background = 'var(--primary)';
         }
-      });
+        msgDiv.innerHTML = '<div class="sender">' + data.username + '</div><div class="msg-text">' + data.content + '</div>';
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
 
-      // Scroll the reviews container
-      window.addEventListener("DOMContentLoaded", function () {
-        var reviewsContainer = document.getElementById("reviews-container");
-        reviewsContainer.scrollLeft = reviewsContainer.scrollWidth;
+    // Chat toggle
+    document.getElementById('chat-button')?.addEventListener('click', function() {
+        var container = document.getElementById('chat-container');
+        container.classList.toggle('open');
+    });
+    document.getElementById('close-button').addEventListener('click', function() {
+        document.getElementById('chat-container').classList.remove('open');
+    });
 
-        setInterval(function () {
-          reviewsContainer.scrollLeft -= 1; // Adjust the scroll speed as desired
-        }, 27); // Adjust the interval duration as desired
-      });
-    </script>
+    // Hire button
+    document.getElementById("hire-button")?.addEventListener("click", function () {
+        fetch("{{ url_for('hire_crew_member') }}", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ crew_member_id: "{{ crew_member.id }}" })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) alert("החבר נוסף לעגלה!");
+            else alert("שגיאה: " + (data.error || 'נסה שוב'));
+        });
+    });
 
+    // Show more button
+    document.getElementById("show-more-button")?.addEventListener("click", function () {
+        var section = document.getElementById("reviews-section");
+        if (section.style.display === "none" || !section.style.display) {
+            section.style.display = "block";
+            this.textContent = "הסתר";
+        } else {
+            section.style.display = "none";
+            this.textContent = "...הצג עוד";
+        }
+    });
+
+    function closeReviews() {
+        document.getElementById("reviews-section").style.display = "none";
+        document.getElementById("show-more-button").textContent = "...הצג עוד";
+    }
+
+    // Auto-scroll reviews
+    window.addEventListener("DOMContentLoaded", function () {
+        var container = document.querySelector(".reviews-container");
+        if (container) {
+            container.scrollLeft = container.scrollWidth;
+            setInterval(function () { container.scrollLeft -= 1; }, 27);
+        }
+    });
+</script>
+
+<!-- Booking Modal -->
+<div class="modal-overlay" id="booking-modal">
+    <div class="modal-content">
+        <h3>📅 הזמנת שירות</h3>
+        <label>בחר תאריך:</label>
+        <input type="date" id="booking-date" onchange="loadSlots()">
+        <label>בחר שעה:</label>
+        <select id="booking-time"><option value="">בחר תאריך תחילה</option></select>
+        <label>תיאור העבודה:</label>
+        <textarea id="booking-description" rows="3" placeholder="תאר/י מה צריך לעשות"></textarea>
+        <label>מיקום:</label>
+        <input type="text" id="booking-location" placeholder="כתובת">
+        <div class="modal-actions">
+            <button class="confirm" onclick="confirmBooking()">אישור הזמנה</button>
+            <button class="cancel" onclick="closeBooking()">ביטול</button>
+        </div>
+        <div id="booking-result" style="margin-top:12px;text-align:center;"></div>
+    </div>
+</div>
+
+<script>
+    let selectedCrewMemberId = {{ crew_member.id }};
+    function openBooking(id) {
+        selectedCrewMemberId = id || {{ crew_member.id }};
+        document.getElementById('booking-modal').style.display = 'block';
+        document.getElementById('booking-result').innerHTML = '';
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('booking-date').min = today;
+    }
+    function closeBooking() {
+        document.getElementById('booking-modal').style.display = 'none';
+    }
+    function loadSlots() {
+        const date = document.getElementById('booking-date').value;
+        if (!date) return;
+        const timeSelect = document.getElementById('booking-time');
+        timeSelect.innerHTML = '<option value="">טוען...</option>';
+        fetch('/api/get_available_slots/' + selectedCrewMemberId + '/' + date)
+            .then(r => r.json())
+            .then(slots => {
+                timeSelect.innerHTML = '<option value="">בחר שעה</option>';
+                if (slots.length === 0) {
+                    timeSelect.innerHTML = '<option value="">לא נמצאו שעות פנויות</option>';
+                } else {
+                    slots.forEach(slot => {
+                        const opt = document.createElement('option');
+                        opt.value = slot.start + '|' + slot.end;
+                        opt.textContent = slot.label;
+                        timeSelect.appendChild(opt);
+                    });
+                }
+            })
+            .catch(() => timeSelect.innerHTML = '<option value="">שגיאה</option>');
+    }
+    function confirmBooking() {
+        const date = document.getElementById('booking-date').value;
+        const timeVal = document.getElementById('booking-time').value;
+        const description = document.getElementById('booking-description').value;
+        const location = document.getElementById('booking-location').value;
+        const resultDiv = document.getElementById('booking-result');
+        if (!date || !timeVal) { resultDiv.innerHTML = '<p style="color:red;">נא לבחור תאריך ושעה</p>'; return; }
+        const [startTime, endTime] = timeVal.split('|');
+        resultDiv.innerHTML = '<p style="color:#666;">שולח הזמנה...</p>';
+        fetch('/book_crew_member', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ crew_member_id: selectedCrewMemberId, date: date, start_time: startTime, end_time: endTime, description: description, location: location })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) { resultDiv.innerHTML = '<p style="color:green;">ההזמנה בוצעה! ✅</p>'; setTimeout(closeBooking, 2000); }
+            else { resultDiv.innerHTML = '<p style="color:red;">' + (data.error || 'שגיאה') + '</p>'; }
+        })
+        .catch(err => resultDiv.innerHTML = '<p style="color:red;">שגיאה: ' + err + '</p>');
+    }
+    document.getElementById('booking-modal')?.addEventListener('click', function(e) { if (e.target === this) closeBooking(); });
+</script>
 {% endblock %}

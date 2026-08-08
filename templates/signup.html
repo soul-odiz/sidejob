@@ -66,9 +66,31 @@
         border-radius: 12px 12px 0 0;
         text-align: center;
     }
+    .profession-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin: 10px auto;
+        max-width: 500px;
+    }
+    .profession-option {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .profession-option label {
+        width: auto;
+        margin: 0;
+        font-size: 13px;
+    }
+    .profession-option input {
+        width: auto;
+        margin: 0;
+    }
 </style>
 
-<form method="post" action="{{ url_for('signup') }}">
+<form method="post" action="{{ url_for('signup') }}" enctype="multipart/form-data">
     <h1>:צור חשבון</h1>
     <div>
         <input type="text" id="username" name="username" required>
@@ -86,40 +108,51 @@
         <input type="text" id="last_name" name="last_name" required>
         <label for="last_name">:שם משפחה</label>
         <br>
+        <input type="text" id="phone" name="phone">
+        <label for="phone">:טלפון</label>
+        <br>
         <input type="checkbox" name="is_crew_member" id="is_crew_member">
-        <label for="is_crew_member">:הרשם כחבר צוות</label>
+        <label for="is_crew_member">:הרשם כעצמאי</label>
         <br>
     </div>
     <div id="crew_member_info">
-        <h4>מידע נוסף לחברי צוות</h4>
+        <h4>פרטים לעסק/שירות</h4>
         <input type="text" id="name" name="name">
-        <label for="name">:שם מלא</label>
+        <label for="name">:שם העסק/שירות</label>
         <br>
-        <textarea id="description" name="description"></textarea>
-        <label for="description">:תיאור</label>
+        <textarea id="bio" name="bio" placeholder="ספר/י על עצמך ועל השירותים שאת/ה מציע/ה"></textarea>
+        <label for="bio">:אודות</label>
         <br>
-        <input type="number" id="hourly_fee" name="hourly_fee" step="0.01">
-<label for="hourly_fee">:שכר שעתי</label>
-<br>
-<input type="text" id="profile_picture" name="profile_picture">
-<label for="profile_picture">:קישור לתמונת פרופיל</label>
-<br>
-<input type="number" id="star_rating" name="star_rating" step="0.01" min="0" max="10">
-<label for="star_rating">:כוכבים</label>
-<br>
-</div>
-<button type="submit">צור חשבון</button>
-
+        <input type="number" id="hourly_fee" name="hourly_fee" step="0.01" placeholder="לדוגמה: 100">
+        <label for="hourly_fee">:מחיר לשעה (₪)</label>
+        <br>
+        <input type="file" id="profile_picture" name="profile_picture" accept="image/*">
+        <label for="profile_picture">:תמונת פרופיל</label>
+        <br>
+        <input type="text" id="location" name="location" placeholder="תל אביב">
+        <label for="location">:מיקום</label>
+        <br>
+        <input type="text" id="cm_phone" name="cm_phone">
+        <label for="cm_phone">:טלפ לקבלת הזמנות</label>
+        <br>
+        
+        <h4>בחר/י את סוגי השירותים שאת/ה מציע/ה:</h4>
+        <div class="profession-grid">
+            {% for prof in professions %}
+            <div class="profession-option">
+                <input type="checkbox" id="prof_{{ prof.id }}" name="professions" value="{{ prof.id }}">
+                <label for="prof_{{ prof.id }}">{{ prof.name }}</label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <button type="submit">צור חשבון</button>
 </form>
+
 <script>
-    // Toggle the display of crew members checkbox
     document.getElementById('is_crew_member').addEventListener('change', function() {
         var crewMemberInfo = document.getElementById('crew_member_info');
-        if (this.checked) {
-            crewMemberInfo.style.display = 'block';
-        } else {
-            crewMemberInfo.style.display = 'none';
-        }
+        crewMemberInfo.style.display = this.checked ? 'block' : 'none';
     });
 </script>
 

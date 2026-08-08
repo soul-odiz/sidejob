@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .container-custom {
+        max-width: 700px;
+        margin: 80px auto;
+        padding: 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    h1 {
+        color: #87779F;
+        margin-bottom: 30px;
+    }
+    .day-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 10px 0;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    .day-row label {
+        width: 60px;
+        font-weight: bold;
+    }
+    .day-row input[type="time"] {
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .day-row .remove-btn {
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        cursor: pointer;
+    }
+    .add-btn {
+        background: #87779F;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 10px;
+    }
+    .save-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 20px;
+    }
+    .add-btn:hover, .save-btn:hover { opacity: 0.9; }
+    .day-checkbox { margin-left: 5px; }
+    .info-text { color: #666; font-size: 14px; margin-bottom: 20px; }
+</style>
+
+<div class="container-custom">
+    <h1>⚙️ הגדרת שעות עבודה</h1>
+    <p class="info-text">קבע מתי אתה זמין לעבודה. לקוחות יוכלו להזמין אותך רק בשעות שקבעת כאן.</p>
+    
+    <form method="POST">
+        <div id="hours-container">
+            {% if working_hours and working_hours|length > 0 %}
+                {% for wh in working_hours %}
+                <div class="day-row">
+                    <input type="hidden" name="day_of_week[]" value="{{ wh.day_of_week }}">
+                    <label>{{ days[wh.day_of_week] }}</label>
+                    <span>מ:</span>
+                    <input type="time" name="start_time[]" value="{{ wh.start_time }}" required>
+                    <span>עד:</span>
+                    <input type="time" name="end_time[]" value="{{ wh.end_time }}" required>
+                    <button type="button" class="remove-btn" onclick="this.parentElement.remove()">✕</button>
+                </div>
+                {% endfor %}
+            {% else %}
+                {% for i in range(7) %}
+                <div class="day-row">
+                    <input type="hidden" name="day_of_week[]" value="{{ i }}">
+                    <label>{{ days[i] }}</label>
+                    <span>מ:</span>
+                    <input type="time" name="start_time[]" value="09:00">
+                    <span>עד:</span>
+                    <input type="time" name="end_time[]" value="17:00">
+                    <button type="button" class="remove-btn" onclick="this.parentElement.remove()">✕</button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="save-btn">💾 שמור שעות עבודה</button>
+    </form>
+    
+    <p style="margin-top:30px;color:#666;">
+        <a href="{{ url_for('crew_member_profile', crew_member_id=crew_member.id) }}">↩️ חזרה לפרופיל</a>
+    </p>
+</div>
+{% endblock %}

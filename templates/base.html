@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, shrink-to-fit=no">
-    <title>sideJob</title>
+    <title>sideJob - פרילנסרים עצמאיים</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -11,298 +12,172 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<style>
-  .sidenav {
-    position: fixed;
-    z-index: 1;
-    height: 100%;
-    width: 0px;
-    top: 0;
-    right: 0;
-    background-color: #111;
-    overflow-x: hidden;
-    padding-top: 55px;
-    direction: rtl;
-    z-index: 3000;
-  }
-  .sidenav li {
-    padding-left: 70px;
-    margin-right: 0px;
-  }
-  .sidenav a {
-    padding: 6px 8px 6px 16px;
-    text-decoration: none;
-    font-size: 25px;
-    color: white;
-    display: block;
-    text-align: right;
-    transition: color 0.3s ease;
-  }
-  .sidenav a:hover {
-    color: #87779F;
-  }
-  .sidenav .closebtn {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;
-  }
-  body {
-    padding: 0vw;
-    margin: 10px;
-    box-sizing: border-box;
-    padding-top: 50px;
-  }
-  .header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 15px;
-  }
-  .logo {
-    display: block;
-    margin: 0 auto;
-    position: absolute;
-    top: 3%;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 44%;
-    border: 2px solid #333;
-    object-fit: fill;
-    width: 20%;
-    height: 10%;
-    box-shadow: 0px 0px 10px 2px #87779F;
-    padding-bottom: 6px;
-    background: #87779F;
-    z-index: 1500;
-  }
-  .navbar {
-    position: fixed;
-    top: 15px;
-    right: 5px;
-    z-index: 1;
-  }
-  .openbtn {
-    font-size: 25px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-align: center;
-    margin: 4px 25px;
-    border-radius: 8%;
-    height: 43px;
-    background: #87779F;
-    border-radius: 50%;
-  }
-  .openbtn:hover {
-    background-color: #333;
-  }
-  .notification-button {
-    display: inline-block;
-    margin: 31px -6px;
-    height: 41px;
-    cursor: pointer;
-    text-align: center;
-    transition: background-color 0.3s ease;
-    position: fixed;
-    top: -3px;
-    right: 100px;
-    z-index: 1000;
-    background: #87779F;
-    border-radius: 50%;
-  }
-  .notification-button:hover {
-    background-color: #333;
-  }
-  .notification-badge {
-    position: relative;
-    display: inline-block;
-    vertical-align: middle;
-  }
-  .notification-badge .badge {
-    position: fixed;
-    top: 15px;
-    right:110px;
-    background-color: red;
-    color: white;
-    padding: 2px 6px;
-    border-radius: 50%;
-    font-size: 12px;
-    z-index:2000;
-  }
-  .notify {
-    display: none;
-    margin-top: 20px;
-    position: fixed;
-    top: 50px;
-    right: 87px;
-    border: 2px solid lightgrey;
-    border-radius: 10px;
-    background-color: #f8f9fa;
-    padding: 10px;
-  }
-  .user-profile {
-    display: inline-block;
-    margin: 31px -6px;
-    height: 41px;
-    cursor: pointer;
-    text-align: center;
-    transition: background-color 0.3s ease;
-    position: fixed;
-    top: -3px;
-    right: 148px;
-    z-index: 1000;
-    background: #87779F;
-    border-radius: 50%;
-  }
-  .user-profile:hover {
-    background-color: #333;
-  }
-  .search {
-    display: inline-block;
-    height: 41px;
-    cursor: pointer;
-    text-align: center;
-    transition: background-color 0.3s ease;
-    position: fixed;
-    top: 28px;
-    right: 190px;
-    z-index: 1000;
-    background: #87779F;
-    border-radius: 50%;
-  }
-  .search:hover {
-    background-color: #333;
-  }
-  footer {
-    background-color: #f8f9fa;
-    text-align: center;
-    padding: 10px;
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-
-  }
-  
-  @media screen and (max-height: 450px) {
-    .sidenav {padding-top: 15px;}
-    .sidenav a {font-size: 18px;}
-  }
-  /* logo for mobile */
-  @media (max-width: 576px) {
-      .logo {
-          width: 30%;
-          height: 15%;
-          top: 2%;
-      }
-  }
-  /* logo for larger screens */
-  @media (min-width: 1200px) {
-      .logo {
-          width: 15%;
-          height: 7.5%;
-          top: 3%;
-      }
-  }
-</style>
 <body>
-  <header>
-    <div class="background-container">
-      <div class="background-animation">
-    <div class="sidenav">
-      <ul>
-        <li><a href="{{ url_for('index') }}">דף הבית</a></li>
-        <li><a href="{{ url_for('about') }}">אודות</a></li>
-        {% if 'user_id' not in session %}
-        <li><a href="{{ url_for('signup') }}">צור חשבון</a></li>
-        <li><a href="{{ url_for('login') }}">התחברות</a></li>
-        {% else %}
-          <li><a href="{{ url_for('cart') }}">עגלה</a></li>
-          <li><a href="{{ url_for('edit_user') }}">מידע נוסף</a></li>
-          <li><a href="{{ url_for('logout') }}">התנתקות</a></li>
-          {% endif %}
-        {% if user and user.is_crew_member %}
-        {% endif %}
-        <a href="#" class="closebtn" onclick="toggleNav()">&times;</a>
-      </ul>
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
     </div>
 
-    {% with notifications = get_flashed_messages() %}
-      <a onclick="toggleNotifications()"><img src="{{ url_for('static', filename='notify.png') }}" alt="nav" class="notification-button"></a>
-      <span class="notification-badge {% if notifications %}has-unread{% endif %}">
-        {% if notifications %}
-        <span class="badge">{{ notifications|length }}</span>
-        {% endif %}
-      </span>
-    </button>
-    <div class="notify">
-        {% if notifications %}
-        <ul>
-          {% for notification in notifications %}
-          <li>{{ notification }}</li>
-          {% endfor %}
-        </ul>
-        {% endif %}
-    </div>
-    {% endwith %}
+    <header>
+        <div class="sidenav" id="mySidenav">
+            <ul>
+                <li><a href="{{ url_for('index') }}">🏠 דף הבית</a></li>
+                <li><a href="{{ url_for('errands') }}">📋 משימות</a></li>
+                <li><a href="{{ url_for('about') }}">ℹ️ אודות</a></li>
+                {% if 'user_id' not in session %}
+                <li><a href="{{ url_for('signup') }}">📝 צור חשבון</a></li>
+                <li><a href="{{ url_for('login') }}">🔑 התחברות</a></li>
+                {% else %}
+                <li><a href="{{ url_for('my_bookings') }}">📅 ההזמנות שלי</a></li>
+                <li><a href="{{ url_for('cart') }}">🛒 עגלה</a></li>
+                <li><a href="{{ url_for('edit_user') }}">👤 פרופיל אישי</a></li>
+                <li><a href="{{ url_for('notifications') }}">🔔 התראות</a></li>
+                    {% if session.get('is_crew_member') %}
+                    <li><a href="{{ url_for('crew_member_profile', crew_member_id=session.get('crew_member_id')) }}">⭐ הפרופיל שלי</a></li>
+                    {% endif %}
+                <li><a href="{{ url_for('logout') }}">🚪 התנתקות</a></li>
+                {% endif %}
+                <li><a href="#" class="closebtn" onclick="toggleNav()">&times;</a></li>
+            </ul>
+        </div>
 
-    <div class="container-fluid d-flex justify-content-end">
-      <div class="navbar">
-        <a onclick="toggleNav()"><img src="{{ url_for('static', filename='navbaar.jpg.png') }}" alt="nav" class="openbtn"></a>
-      </div>
-      <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='logo.jpeg') }}" alt="Logo" class="logo" style="width: 200px; height: 100px;"></a>
-      <a href="{{ url_for('edit_user') }}"><img src="{{ url_for('static', filename='profile.png') }}" alt="user profile" class="user-profile"></a>
-      <a href="#"><img src="{{ url_for('static', filename='search.jpg') }}" alt="search" class="search"></a>
-    </div>
-  </header>
-    <main>
-      {% block content %}
+        <div class="container-fluid d-flex justify-content-end">
+            <div class="navbar">
+                <button class="openbtn" onclick="toggleNav()">☰</button>
+            </div>
+            <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='logo.jpeg') }}" alt="Logo" class="logo"></a>
+            
+            {% if 'user_id' in session %}
+            <a href="{{ url_for('my_bookings') }}" class="nav-icon-btn bookings-btn" title="ההזמנות שלי">📅</a>
+            <a href="{{ url_for('errands') }}" class="nav-icon-btn errands-btn" title="משימות">📋</a>
+            <button onclick="toggleSearch()" class="nav-icon-btn search-btn" title="חיפוש">🔍</button>
+            <a href="{{ url_for('edit_user') }}" class="nav-icon-btn user-profile-btn" title="פרופיל">👤</a>
+            <div class="notification-badge">
+                <button onclick="toggleNotifications()" class="nav-icon-btn notification-button" title="התראות">🔔</button>
+                <span class="badge" id="unread-badge" style="display:none;">0</span>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="notify" id="notifyDiv"></div>
+        
+        <!-- Inline search bar -->
+        <div id="search-bar-div" style="display:none;position:fixed;top:55px;left:0;right:0;z-index:3000;padding:10px;background:white;box-shadow:0 2px 5px rgba(0,0,0,0.2);">
+            <form method="GET" action="{{ url_for('index') }}" style="display:flex;gap:5px;max-width:500px;margin:0 auto;">
+                <input type="text" name="q" placeholder="חפש שירות, מקצוע, או שם..." style="flex:1;padding:10px;border:1px solid #87779F;border-radius:20px;text-align:right;">
+                <button type="submit" style="background:#87779F;color:white;border:none;border-radius:50%;width:40px;height:40px;">🔍</button>
+            </form>
+        </div>
+    </header>
 
-      {% endblock %}
+    <main style="padding-bottom:60px;">
+        {% block content %}{% endblock %}
     </main>
-  </div>
-  <div> 
+
     <footer>
-      <p>&copy; 2023 sideJob. All rights reserved.</p>
+        <p>&copy; 2023 sideJob. All rights reserved. | <a href="{{ url_for('about') }}">אודות</a></p>
     </footer>
+
     <script>
-      function toggleNav() {
-        var sidenav = document.querySelector(".sidenav");
-        if (sidenav.style.width == "0px") {
-          sidenav.style.width = "245px";
-        } else {
-          sidenav.style.width = "0px";
-          sidenav.style.height = "100%";
+        function toggleNav() {
+            var sidenav = document.getElementById("mySidenav");
+            var overlay = document.getElementById("sidenav-overlay");
+            var isOpen = sidenav.classList.contains("open");
+            if (isOpen) {
+                sidenav.classList.remove("open");
+                if (overlay) overlay.classList.remove("open");
+            } else {
+                sidenav.classList.add("open");
+                if (!overlay) {
+                    overlay = document.createElement("div");
+                    overlay.id = "sidenav-overlay";
+                    overlay.className = "sidenav-overlay";
+                    overlay.onclick = toggleNav;
+                    document.body.appendChild(overlay);
+                }
+                overlay.classList.add("open");
+            }
         }
-      }
-      function hireCrewMember(crewMemberId) {
-          const xhr = new XMLHttpRequest();
-          xhr.open("POST", "{{ url_for('hire_crew_member') }}", true);
-          xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-          xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-          xhr.onreadystatechange = function() {
-              if (xhr.readyState === 4 && xhr.status === 200) {
-                  const response = JSON.parse(xhr.responseText);
-                  if (response.success) {
-                      alert("Crew member added to cart.");
-                  } else {
-                      alert("Error: Unable to add crew member to cart.");
-                  }
-              }
-          };
-          xhr.send("crew_member_id=" + crewMemberId);
-      }
-    </script>
-    <script>
-      function toggleNotifications() {
-        var notifyDiv = document.querySelector('.notify');
-        if (notifyDiv.style.display === 'none') {
-          notifyDiv.style.display = 'block';
-        } else {
-          notifyDiv.style.display = 'none';
+        
+        function toggleNotifications() {
+            var div = document.getElementById('notifyDiv');
+            if (div.style.display === 'block') {
+                div.style.display = 'none';
+            } else {
+                fetch('/notifications')
+                    .then(r => r.text())
+                    .then(html => {
+                        // Extract just the content from the response
+                        div.innerHTML = '<div style="max-height:250px;overflow-y:auto;">טוען...</div>';
+                        // Just do a direct fetch for count
+                    });
+                // Simple approach: redirect to notifications page
+                window.location.href = '/notifications';
+            }
         }
-      }
+        
+        function toggleSearch() {
+            var div = document.getElementById('search-bar-div');
+            div.style.display = div.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        // Check for unread notifications
+        function checkNotifications() {
+            fetch('/api/unread_notifications')
+                .then(r => r.json())
+                .then(data => {
+                    var badge = document.getElementById('unread-badge');
+                    if (data.count > 0) {
+                        badge.textContent = data.count;
+                        badge.style.display = 'inline';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                })
+                .catch(() => {});
+        }
+        
+        {% if 'user_id' in session %}
+        setInterval(checkNotifications, 30000); // Check every 30 seconds
+        checkNotifications();
+        {% endif %}
+        
+        // ===== CSRF AUTO-INJECTION =====
+        (function() {
+            var token = "{{ csrf_token }}";
+            document.querySelectorAll('form[method="POST"], form[method="post"]').forEach(function(form) {
+                if (!form.querySelector('input[name="csrf_token"]')) {
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'csrf_token';
+                    input.value = token;
+                    form.appendChild(input);
+                }
+            });
+            // Also add CSRF header to all fetch/XMLHttpRequest
+            var origFetch = window.fetch;
+            window.fetch = function() {
+                var args = Array.prototype.slice.call(arguments);
+                if (args[1] && args[1].method && args[1].method.toUpperCase() !== 'GET') {
+                    args[1] = args[1] || {};
+                    args[1].headers = args[1].headers || {};
+                    args[1].headers['X-CSRF-Token'] = token;
+                }
+                return origFetch.apply(this, args);
+            };
+        })();
     </script>
 </body>
 </html>

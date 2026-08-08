@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .container-custom {
+        max-width: 800px;
+        margin: 80px auto;
+        padding: 20px;
+        direction: rtl;
+    }
+    h1 { color: #87779F; text-align: center; margin-bottom: 10px; }
+    .errand-info {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+    }
+    .proposal-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 15px 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .proposal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .proposal-header h5 { margin: 0; }
+    .price { color: #28a745; font-size: 20px; font-weight: bold; }
+    .status-tag { padding: 4px 12px; border-radius: 20px; font-size: 13px; }
+    .status-accepted { background: #d4edda; color: #155724; }
+    .status-rejected { background: #f8d7da; color: #721c24; }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .accept-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .back-btn {
+        display: block;
+        text-align: center;
+        margin-top: 30px;
+        color: #87779F;
+    }
+    .empty-state { text-align: center; padding: 60px; color: #999; }
+</style>
+
+<div class="container-custom">
+    <h1>💬 הצעות למשימה</h1>
+    
+    <div class="errand-info">
+        <h3>{{ errand.title }}</h3>
+        <p>{{ errand.description }}</p>
+        {% if errand.budget_min or errand.budget_max %}
+        <p><strong>תקציב:</strong> {% if errand.budget_min %}₪{{ errand.budget_min }}{% endif %} - {% if errand.budget_max %}₪{{ errand.budget_max }}{% endif %}</p>
+        {% endif %}
+        <p><strong>סטטוס:</strong> {% if errand.status == 'open' %}פתוח{% elif errand.status == 'assigned' %}הוקצה{% else %}{{ errand.status }}{% endif %}</p>
+    </div>
+    
+    {% if proposals|length == 0 %}
+    <div class="empty-state">
+        <h3>עדיין לא התקבלו הצעות</h3>
+        <p>חכה שהעצמאיים יגישו הצעות</p>
+    </div>
+    {% endif %}
+    
+    {% for proposal in proposals %}
+    <div class="proposal-card">
+        <div class="proposal-header">
+            <h5>⭐ {{ proposal.crew_member.name }}</h5>
+            <span class="price">₪{{ proposal.price }}</span>
+        </div>
+        <p style="color:#666;">{{ proposal.description or 'ללא תיאור' }}</p>
+        <p style="font-size:13px;color:#999;">הוגש בתאריך: {{ proposal.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+        
+        {% if errand.status == 'open' and proposal.status == 'pending' %}
+        <a href="{{ url_for('accept_proposal', proposal_id=proposal.id) }}" class="accept-btn" onclick="return confirm('לאשר הצעה זו?')">✅ קבל הצעה</a>
+        {% endif %}
+        
+        {% if proposal.status != 'pending' %}
+        <span class="status-tag status-{{ proposal.status }}">
+            {% if proposal.status == 'accepted' %}✅ הצעה מאושרת
+            {% elif proposal.status == 'rejected' %}❌ הצעה שנדחתה
+            {% endif %}
+        </span>
+        {% endif %}
+    </div>
+    {% endfor %}
+    
+    <a href="{{ url_for('errands') }}" class="back-btn">↩️ חזרה למשימות</a>
+</div>
+{% endblock %}
