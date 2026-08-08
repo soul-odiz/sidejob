@@ -824,27 +824,160 @@ footer {
 }
 
 /* ========== RESPONSIVE ========== */
-@media (max-width: 768px) {
-    body { padding-top: 60px; }
-    header { height: 50px; padding: 0 10px; }
-    .logo { height: 35px; }
-    .nav-btn { width: 34px; height: 34px; font-size: 15px; }
-    .profile-header { flex-direction: column; padding: 20px; }
-    .profile-img { width: 100%; height: 200px; }
-    .filter-row { gap: 8px; }
-    .filter-row select, .filter-row input { width: 100%; }
-    .chat-container-custom { width: calc(100% - 20px); right: 10px; bottom: 10px; }
-    .booking-card { padding: 15px; }
-    .booking-header { flex-direction: column; gap: 8px; align-items: flex-start; }
-    .form-container { margin: 20px 10px; padding: 20px; }
-    .modal-content { margin: 40px 15px; }
+
+/* Tablet (≤1024px) */
+@media (max-width: 1024px) {
     .page-container { padding: 15px; }
-    .crew-card .card-img-top { height: 140px; }
+    .crew-grid { gap: 15px; }
+    .crew-card .card-img-top { height: 160px; }
+    .crew-card .card-body { padding: 12px; }
+    .errand-card { padding: 15px; }
+    .booking-card { padding: 15px; }
+    .booking-header { flex-wrap: wrap; gap: 8px; }
+    .profile-container { max-width: 100%; }
 }
 
+/* Mobile (≤768px) */
+@media (max-width: 768px) {
+    body { padding-top: 55px; font-size: 15px; }
+    main { padding: 0; }
+    .page-container { padding: 10px; max-width: 100%; }
+    
+    /* Topbar */
+    .topbar { height: 50px; padding: 0 10px; }
+    .logo-img { height: 34px; width: 34px; }
+    .logo-text { font-size: 16px; }
+    .nav-btn { width: 34px; height: 34px; font-size: 16px; }
+    
+    /* Sidenav */
+    .sidenav { width: 260px; right: -260px; }
+    .sidenav a { font-size: 16px; padding: 13px 20px; }
+    
+    /* Profile */
+    .profile-header { flex-direction: column; padding: 0; text-align: center; }
+    .profile-img { width: 100%; max-width: 250px; height: 200px; border-radius: var(--radius); margin: 0 auto; object-fit: cover; }
+    .profile-info { padding: 15px; text-align: center; }
+    .profile-info h1 { font-size: 24px; }
+    .profile-meta { flex-direction: column; gap: 8px; align-items: center; }
+    .profile-actions { flex-direction: column; gap: 8px; }
+    .profile-actions .btn, .profile-actions a.btn { width: 100%; }
+    .profile-stats { justify-content: center; }
+    
+    /* Crew Grid */
+    .crew-grid { grid-template-columns: 1fr; gap: 12px; }
+    .crew-card { max-width: 100%; }
+    .crew-card .card-img-top { height: 180px; }
+    .crew-card .profession-tags { flex-wrap: wrap; }
+    
+    /* Filter */
+    .filter-section { padding: 10px; }
+    .filter-row { flex-direction: column; gap: 8px; }
+    .filter-row select, .filter-row input { width: 100%; min-width: 0; }
+    .search-bar { flex-direction: column; }
+    .search-bar input { max-width: 100%; }
+    
+    /* Forms */
+    .form-container { margin: 10px; padding: 18px 15px; border-radius: var(--radius-sm); }
+    .form-container h2 { font-size: 22px; }
+    .form-group input, .form-group select, .form-group textarea { font-size: 16px; padding: 10px 12px; }
+    .form-row { flex-direction: column; gap: 10px; }
+    .form-row > * { width: 100%; }
+    
+    /* Buttons */
+    .btn { width: 100%; padding: 12px; font-size: 15px; }
+    .btn-group { flex-direction: column; gap: 8px; }
+    
+    /* Booking */
+    .booking-card { padding: 12px; margin-bottom: 10px; }
+    .booking-header { flex-direction: column; gap: 6px; align-items: flex-start; }
+    .booking-header h3 { font-size: 17px; }
+    .booking-actions { flex-direction: column; gap: 6px; }
+    .booking-actions a, .booking-actions button { width: 100%; text-align: center; padding: 10px; }
+    .booking-details { grid-template-columns: 1fr; }
+    
+    /* Errands */
+    .errand-card { padding: 12px; }
+    .errand-card h3 { font-size: 17px; }
+    .errand-card .errand-actions { flex-direction: column; gap: 6px; }
+    .errand-actions a, .errand-actions button { width: 100%; }
+    .proposal-card { padding: 12px; }
+    .proposal-header { flex-direction: column; gap: 6px; }
+    
+    /* Modals */
+    .modal-content { margin: 30px 10px; width: auto; max-width: calc(100% - 20px); }
+    .overlay-content { width: 90%; max-width: 400px; padding: 20px; }
+    
+    /* Chat */
+    .chat-container-custom { width: calc(100% - 16px); right: 8px; left: 8px; bottom: 8px; }
+    .chat-messages { height: 240px; }
+    
+    /* Tables */
+    .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { min-width: 600px; font-size: 14px; }
+    th, td { padding: 8px 10px; }
+    
+    /* Static pages */
+    .about-container, .taxes-container { padding: 20px 15px; }
+    .about-container h1 { font-size: 24px; }
+    
+    /* Footer */
+    footer { padding: 12px; font-size: 12px; margin-top: 30px; }
+}
+
+/* Small Phone (≤480px) */
 @media (max-width: 480px) {
-    .profile-meta { flex-direction: column; gap: 8px; }
-    .profile-actions { flex-direction: column; }
-    .booking-actions { flex-direction: column; }
-    .booking-actions a { width: 100%; text-align: center; }
+    body { padding-top: 48px; font-size: 14px; }
+    
+    .topbar { height: 44px; padding: 0 8px; }
+    .logo-img { height: 28px; width: 28px; }
+    .logo-text { display: none; }
+    .nav-btn { width: 30px; height: 30px; font-size: 15px; }
+    .topbar-left { gap: 2px; }
+    
+    .sidenav { width: 100%; right: -100%; }
+    .sidenav a { padding: 15px 25px; }
+    
+    .profile-img { max-width: 180px; height: 150px; }
+    .profile-info h1 { font-size: 20px; }
+    .profile-stats { font-size: 13px; gap: 15px; }
+    .stat-item { font-size: 13px; }
+    .stat-number { font-size: 18px; }
+    
+    .crew-card .card-img-top { height: 150px; }
+    .crew-card .card-title { font-size: 16px; }
+    .crew-card .profession-tag { font-size: 11px; padding: 3px 8px; }
+    
+    .form-container { margin: 5px; padding: 15px 10px; }
+    .form-container h2 { font-size: 20px; }
+    .form-group input, .form-group select, .form-group textarea { padding: 8px 10px; }
+    
+    .booking-card { padding: 10px; }
+    .review-card { padding: 10px; }
+    .review-user-img { width: 36px; height: 36px; }
+    
+    .flash-messages { top: 50px; max-width: 95%; width: auto; }
+    .flash-messages .alert { font-size: 13px; padding: 8px 12px; }
+    
+    .btn { padding: 10px; font-size: 14px; }
+    .modal-content { margin: 15px 5px; }
+    .modal-header h3 { font-size: 18px; }
+    
+    .empty-state { padding: 50px 15px; }
+    .empty-state h3 { font-size: 18px; }
+    .empty-state p { font-size: 14px; }
+    
+    h1 { font-size: 22px; }
+    h2 { font-size: 18px; }
+    h3 { font-size: 16px; }
+}
+
+/* Landscape Phone Fix */
+@media (max-width: 768px) and (orientation: landscape) {
+    body { padding-top: 45px; }
+    .topbar { height: 40px; }
+    .logo-img { height: 28px; width: 28px; }
+    .nav-btn { width: 28px; height: 28px; font-size: 14px; }
+    .profile-img { max-width: 120px; height: 100px; }
+    .modal-content { margin: 10px; max-height: 85vh; overflow-y: auto; }
+}
 }
