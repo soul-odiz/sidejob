@@ -493,12 +493,14 @@ def inject_image_helper():
     def get_image_url(stored_value):
         if not stored_value:
             return url_for('static', filename='profile.png')
+        if stored_value == 'profile.png':
+            return url_for('static', filename='profile.png')
         if stored_value.startswith('http'):
             return stored_value
         if stored_value.startswith('/static/'):
             # Legacy format — already a full path
             return stored_value
-        # New format — just filename, serve via /uploads/
+        # New format — just UUID filename, serve via /uploads/
         return url_for('serve_upload', filename=stored_value)
     return {'get_image_url': get_image_url}
 
