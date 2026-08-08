@@ -22,9 +22,9 @@ talisman = Talisman(
     content_security_policy={
         'default-src': "'self'",
         'script-src': "'self' 'unsafe-inline' https://ajax.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com",
-        'style-src': "'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com",
+        'style-src': "'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com",
         'img-src': "'self' data: blob:",
-        'font-src': "'self'",
+        'font-src': "'self' https://fonts.gstatic.com",
         'connect-src': "'self' ws: wss:",
         'frame-src': "'none'",
     },
@@ -114,9 +114,8 @@ def inject_csrf_token():
 
 @socketio.on('connect')
 def handle_connect():
-    """Require authenticated session for SocketIO connections."""
-    if 'user_id' not in session:
-        return False  # Reject unauthenticated connections
+    """Allow all connections. Auth is checked per-event."""
+    pass  # Don't reject unauthenticated users — it causes 400 spam
 
 
 @socketio.on('join_room')
@@ -444,7 +443,8 @@ def save_uploaded_file(file):
             blob_client = BlobServiceClient.from_connection_string(conn_str).get_blob_client(
                 container=container, blob=unique_filename
             )
-            blob_client.upload_blob(file, overwrite=True)
+            blob_client.upload_blob(file.read(), overwrite=True)
+            print(f"UPLOADED to blob: {container}/{unique_filename}", flush=True)
             return unique_filename
         else:
             # Local storage
